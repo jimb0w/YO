@@ -628,7 +628,7 @@ texdoc stlog close
 \color{black}
 
 \clearpage
-\section{Age-adjusted rates}
+\section{Age-standardized rates}
 
 
 Additionally, we will age-standardise the incidence rates to the European population in 2010. 
