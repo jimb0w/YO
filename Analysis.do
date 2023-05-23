@@ -34,7 +34,7 @@ set linesize 100
     \begin{flushright}
         \Huge
         \textbf{International trends in the incidence of diabetes in young people}
-\color{Magenta1}
+\color{black}
 \rule{16cm}{2mm} \\
 \Large
 \color{black}
@@ -54,7 +54,7 @@ Jedidiah Morton \\
 Research Fellow \\
 \color{blue}
 \color{black}
-Center for Medicine Use and Safety, Faculty of Pharmacy and Pharmaceutical Sciences, Monash University, Melbourne, Australia \\\
+Monash University, Melbourne, Australia \\\
 Baker Heart and Diabetes Institute, Melbourne, Australia \\
 \\
 \noindent
@@ -143,10 +143,10 @@ texdoc stlog close
 \pgfkeyssetvalue{/pgfplots/table/@cell content}
 {\multirow{2}{*}{##1}}}},
       display columns/2/.style={column name=Sex, column type={l}, text indicator="},
-      display columns/3/.style={column name=Type 1 diabetes, column type={r}, column type/.add={|}{}},
-      display columns/4/.style={column name=Type 2 diabetes, column type={r}, column type/.add={|}{}},
-      display columns/5/.style={column name=Uncertain diabetes type, column type={r}, column type/.add={|}{|}},
-      display columns/6/.style={column name=Person-years in people without diabetes, column type={r}, column type/.add={|}{|}},
+      display columns/3/.style={column name=Type 1 diabetes, column type={r}},
+      display columns/4/.style={column name=Type 2 diabetes, column type={r}},
+      display columns/5/.style={column name=Uncertain diabetes type, column type={r}},
+      display columns/6/.style={column name=\specialcell{Person-years in people \\ without diabetes}, column type={r}},
       every head row/.style={
         before row={\toprule
 					},
@@ -1081,7 +1081,7 @@ matrix A_`i' = (A_`i'_0_1,A_`i'_0_2,A_`i'_0_3\ ///
 A_`i'_1_1,A_`i'_1_2,A_`i'_1_3\ ///
 A_`i'_2_1,A_`i'_2_2,A_`i'_2_3)
 }
-matrix A = (A_1\A_2\A_3\A_4\A_5\A_6)
+matrix A = (A_1\A_2\A_3\A_4\A_5\A_6\A_7\A_8)
 clear
 svmat A
 gen country=""
@@ -1306,7 +1306,7 @@ ytitle("Annual change in incidence rates (%)", xoffset(-1)) ///
 yline(0, lcolor(gs0)) ///
 ylabel(-5(5)15, angle(0)) ///
 xtitle("Attained age (years)") ///
-xlabel(15(5)35) ///
+xlabel(15(5)40) ///
 title("`c' - `oc'", placement(west) size(medium) color(gs0))
 graph save "Graph" Apage_`i'_`iii'_`a', replace
 }

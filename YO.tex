@@ -1,0 +1,483 @@
+
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{siunitx}
+\usepackage{hyperref,graphicx,booktabs,dcolumn}
+\usepackage{stata}
+\usepackage[x11names]{xcolor}
+\bibliographystyle{unsrt}
+\usepackage{natbib}
+
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+
+\usepackage{multirow}
+\usepackage{booktabs}
+
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+\newcommand{\thedate}{\today}
+
+\usepackage{pgfplotstable}
+
+\begin{document}
+
+
+\begin{titlepage}
+    \begin{flushright}
+        \Huge
+        \textbf{International trends in the incidence of diabetes in young people}
+\color{black}
+\rule{16cm}{2mm} \\
+\Large
+\color{black}
+\thedate \\
+\color{blue}
+https://github.com/jimb0w/YO \\
+\color{black}
+       \vfill
+    \end{flushright}
+        \Large
+
+\noindent
+Jedidiah Morton \\
+\color{blue}
+\href{mailto:Jedidiah.Morton@Monash.edu}{Jedidiah.Morton@monash.edu} \\ 
+\color{black}
+Research Fellow \\
+\color{blue}
+\color{black}
+Monash University, Melbourne, Australia \\\
+Baker Heart and Diabetes Institute, Melbourne, Australia \\
+\\
+\noindent
+Lei Chen \\
+Research Officer \\
+Baker Heart and Diabetes Institute, Melbourne, Australia \\
+\\
+\noindent
+Bendix Carstensen \\
+Senior Statistician \\
+Steno Diabetes Center Copenhagen, Gentofte, Denmark \\
+Department of Biostatistics, University of Copenhagen \\
+\\
+\noindent
+Dianna Magliano \\
+Professor and Head of Diabetes and Population Health \\
+Baker Heart and Diabetes Institute, Melbourne, Australia \\
+
+\end{titlepage}
+
+\pagebreak
+\tableofcontents
+
+
+\pagebreak
+\section{Preface}
+
+The methods used in this analyses are drawn heavily/almost entirely from Bendix Carstensen 
+(see \cite{MaglianoLDE2021,CarstensenSTATMED2007}). \\
+To generate this document, the Stata package texdoc \cite{Jann2016Stata} was used, which is 
+available from: \color{blue} \url{http://repec.sowi.unibe.ch/stata/texdoc/} \color{black} (accessed 14 November 2022). The 
+final Stata do file and this pdf are available at: \color{blue} \url{https://github.com/jimb0w/YO} \color{black}.
+The ordinal colour schemes used are \emph{inferno} and \emph{viridis} from the
+\emph{viridis} package \cite{GarnierR2021}.
+
+\pagebreak
+\section{Crude rates}
+
+We start by examining crude incidence rates for each country.
+We will generate a table showing the overall counts for each country, then plots of the crude incidence
+of each type of diabetes by sex and year. 
+Also, because the diabetes type definitions require two years of non-insulin use to
+be effective, we will drop all data from 2021 or later. 
+
+\color{Blue4}
+\begin{stlog}\input{log/1.log.tex}\end{stlog}
+\color{black}
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Incident diabetes cases and person-years of follow-up in people without diabetes for people aged 15-39, by country and sex.}
+    \label{T1}
+     \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
+      multicolumn names,
+      col sep=colon,
+      header=false,
+      string type,
+	  display columns/0/.style={column name=Country,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{2}{*}{##1}}}},
+	  display columns/1/.style={column name=Period,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{2}{*}{##1}}}},
+      display columns/2/.style={column name=Sex, column type={l}, text indicator="},
+      display columns/3/.style={column name=Type 1 diabetes, column type={r}},
+      display columns/4/.style={column name=Type 2 diabetes, column type={r}},
+      display columns/5/.style={column name=Uncertain diabetes type, column type={r}},
+      display columns/6/.style={column name=\specialcell{Person-years in people \\ without diabetes}, column type={r}},
+      every head row/.style={
+        before row={\toprule
+					},
+        after row={\midrule}
+            },
+        every nth row={2}{before row=\midrule},
+        every last row/.style={after row=\bottomrule},
+    ]{T1.csv}
+  \end{center}
+\end{table}
+
+\color{Blue4}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/2.pdf}
+    \caption{Crude incidence of diabetes in Australia among people aged 15-39 years, by diabetes type}
+    \label{Australiacrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/2_1.pdf}
+    \caption{Crude incidence of diabetes in Catalonia, Spain among people aged 15-39 years, by diabetes type}
+    \label{Catalonia, Spaincrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/2_2.pdf}
+    \caption{Crude incidence of diabetes in Denmark among people aged 15-39 years, by diabetes type}
+    \label{Denmarkcrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/2_3.pdf}
+    \caption{Crude incidence of diabetes in Finland among people aged 15-39 years, by diabetes type}
+    \label{Finlandcrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/2_4.pdf}
+    \caption{Crude incidence of diabetes in Hungary among people aged 15-39 years, by diabetes type}
+    \label{Hungarycrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/2_5.pdf}
+    \caption{Crude incidence of diabetes in Japan among people aged 15-39 years, by diabetes type}
+    \label{Japancrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/2_6.pdf}
+    \caption{Crude incidence of diabetes in Scotland among people aged 15-39 years, by diabetes type}
+    \label{Scotlandcrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/2_7.pdf}
+    \caption{Crude incidence of diabetes in South Korea among people aged 15-39 years, by diabetes type}
+    \label{South Koreacrude}
+\end{figure}
+\begin{stlog}\input{log/2.log.tex}\end{stlog}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/3.pdf}
+    \caption{Crude incidence of diabetes in Australia among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.}
+    \label{Australiacrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/3_1.pdf}
+    \caption{Crude incidence of diabetes in Catalonia, Spain among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.}
+    \label{Catalonia, Spaincrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/3_2.pdf}
+    \caption{Crude incidence of diabetes in Denmark among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.}
+    \label{Denmarkcrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/3_3.pdf}
+    \caption{Crude incidence of diabetes in Finland among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.}
+    \label{Finlandcrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/3_4.pdf}
+    \caption{Crude incidence of diabetes in Hungary among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.}
+    \label{Hungarycrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/3_5.pdf}
+    \caption{Crude incidence of diabetes in Japan among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.}
+    \label{Japancrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/3_6.pdf}
+    \caption{Crude incidence of diabetes in Scotland among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.}
+    \label{Scotlandcrude}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/3_7.pdf}
+    \caption{Crude incidence of diabetes in South Korea among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.}
+    \label{South Koreacrude}
+\end{figure}
+\begin{stlog}\input{log/3.log.tex}\end{stlog}
+\color{black}
+\clearpage
+\section{Age and sex-specific rates}
+\label{asrsec}
+
+For the analyses, we are going to use Carstensen's Age-Period-Cohort model \cite{CarstensenSTATMED2007}
+to estimate the age and sex-specific incidence of type 2 diabetes for each country. For this, 
+we take the incidence and person-years in 5-year age groups, and fit a Poisson model with spline effects
+of age, period (calendar time; measured from 2010 (i.e., 2010 is set to 0)), and cohort (calendar time minus age). 
+This is done separately for each country and sex. Moreover, because of the different years covered by each dataset,
+the knot locations are different for each country (and knot placement is as recommended by Harrell \cite{Harrell2001Springer} 
+for period and cohort effects).
+Then, we use this model to predict the incidence of type 2 diabetes
+for specific ages. These results are presented in figures showing the age-specific
+incidence of type 2 diabetes for each country (figures~\ref{Australia agespec} - ~\ref{South Korea agespec}).
+
+\color{Blue4}
+\begin{stlog}\input{log/4.log.tex}\end{stlog}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5.pdf}
+    \caption{Incidence of diabetes in Australia for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
+    \label{Australia agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_1.pdf}
+    \caption{Incidence of diabetes in Catalonia, Spain for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
+    \label{Catalonia, Spain agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_2.pdf}
+    \caption{Incidence of diabetes in Denmark for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
+    \label{Denmark agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_3.pdf}
+    \caption{Incidence of diabetes in Finland for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
+    \label{Finland agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_4.pdf}
+    \caption{Incidence of diabetes in Hungary for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
+    \label{Hungary agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_5.pdf}
+    \caption{Incidence of diabetes in Japan for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
+    \label{Japan agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_6.pdf}
+    \caption{Incidence of diabetes in Scotland for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
+    \label{Scotland agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_7.pdf}
+    \caption{Incidence of diabetes in South Korea for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
+    \label{South Korea agespec}
+\end{figure}
+\begin{stlog}\input{log/5.log.tex}\end{stlog}
+\color{black}
+
+To make comparison between countries easier, we will plot all curves for age 25 on the same graph 
+(and 20 and 30, to see if there is any difference depending on the age selected; figures ~\ref{agespec20} - ~\ref{agespec30}).
+
+For these plots, we no longer use an ordinal colour scheme. We're using modified rainbow 
+(because some of the rainbow colours are really hard to see).
+
+\color{Blue4}
+\begin{stlog}\input{log/6.log.tex}\end{stlog}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/7.pdf}
+    \caption{Incidence of diabetes for people aged 20 years, by diabetes type and sex}
+    \label{agespec20}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/7_1.pdf}
+    \caption{Incidence of diabetes for people aged 25 years, by diabetes type and sex}
+    \label{agespec25}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/7_2.pdf}
+    \caption{Incidence of diabetes for people aged 30 years, by diabetes type and sex}
+    \label{agespec30}
+\end{figure}
+\begin{stlog}\input{log/7.log.tex}\end{stlog}
+\color{black}
+
+\clearpage
+\section{Age-standardized rates}
+
+
+Additionally, we will age-standardise the incidence rates to the European population in 2010. 
+This will be done using the same Age-Period-Cohort models described above. In this analysis, we will take
+the predicted rates from these models (in single years) and use these in direct standardisation. However,
+to do this, we first need to convert the European standard population (available only in 5-year age groups)
+to 1-year age groups (using linear regression).
+
+\color{Blue4}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/8.pdf}
+    \caption{European standard population in 2010}
+    \label{ESP2010N}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/8_1.pdf}
+    \caption{European standard population proportions in 2010}
+    \label{ESP2010P}
+\end{figure}
+\begin{stlog}\input{log/8.log.tex}\end{stlog}
+\color{black}
+
+\clearpage
+
+With that, we can calculate and plot the age-standardized rates.
+Note: the method used to calculate the confidence intervals is the 
+same as the Stata command \href{https://www.stata.com/manuals/rdstdize.pdf}{dstdize}, and it assumes that the person-years
+are the same for each single age within the 5-year age group (which, if the 
+populations we sample from are anything like the European population, is 
+a safe assumption (figure~\ref{ESP2010P}, and is unlikely to affect the calculated
+error even if included)).
+
+\color{Blue4}
+\begin{stlog}\input{log/9.log.tex}\end{stlog}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/10.pdf}
+    \caption{Age-standardized incidence of diabetes for people aged 15-39 years, by diabetes type and sex}
+    \label{STDfig}
+\end{figure}
+\begin{stlog}\input{log/10.log.tex}\end{stlog}
+\color{black}
+
+\clearpage
+\section{Average Annual Percent Changes}
+
+As a summary metric, we will also estimate the average annual percent change
+in incidence - overall, and by sex. For this, we use a different model with a spline effect
+of age, but only a (log-)linear effect of calendar time. This means we are assuming the effect of time
+is constant throughout follow-up, which we already know is false for a few countries (e.g., Australia;
+figure~\ref{agespec25}). \\
+
+\color{Blue4}
+\begin{stlog}\input{log/11.log.tex}\end{stlog}
+\color{black}
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Average annual percent change in the incidence of diabetes, by country, sex, and diabetes type. Adjusted for age.}
+    \label{APCs}
+     \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
+      multicolumn names,
+      col sep=colon,
+      header=false,
+      string type,
+	  display columns/0/.style={column name=Country,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+	  display columns/1/.style={column name=Period,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+      display columns/2/.style={column name=Sex, column type={l}, text indicator="},
+      display columns/3/.style={column name=Type 1 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/4/.style={column name=Type 2 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/5/.style={column name=Uncertain diabetes type, column type={r}, column type/.add={|}{|}},
+      every head row/.style={
+        before row={\toprule
+					},
+        after row={\midrule}
+            },
+        every nth row={3}{before row=\midrule},
+        every last row/.style={after row=\bottomrule},
+    ]{APCs.csv}
+  \end{center}
+\end{table}
+
+It's also worth looking at variation in the incidence rates by age, as some of the figures in section~\ref{asrsec}
+suggested a greater increase in type 2 diabetes at younger ages. For this, we will use two models: 
+the first includes the interaction between a spline effect of age and a log-linear effect of calendar time (plotted in the left
+panels of the combined figures),
+whereas the second includes a spline effect of age and the product of log-linear effects of age and calendar time (plotted on the right in the figures). 
+
+\color{Blue4}
+\begin{stlog}\input{log/12.log.tex}\end{stlog}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/13.pdf}
+    \caption{Annual percent change in the incidence of diabetes in Australia by age, by diabetes type and sex. Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of age and calendar time in the interaction.}
+    \label{Australia apcageg}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/13_1.pdf}
+    \caption{Annual percent change in the incidence of diabetes in Catalonia, Spain by age, by diabetes type and sex. Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of age and calendar time in the interaction.}
+    \label{Catalonia, Spain apcageg}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/13_2.pdf}
+    \caption{Annual percent change in the incidence of diabetes in Denmark by age, by diabetes type and sex. Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of age and calendar time in the interaction.}
+    \label{Denmark apcageg}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/13_3.pdf}
+    \caption{Annual percent change in the incidence of diabetes in Finland by age, by diabetes type and sex. Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of age and calendar time in the interaction.}
+    \label{Finland apcageg}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/13_4.pdf}
+    \caption{Annual percent change in the incidence of diabetes in Hungary by age, by diabetes type and sex. Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of age and calendar time in the interaction.}
+    \label{Hungary apcageg}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/13_5.pdf}
+    \caption{Annual percent change in the incidence of diabetes in Japan by age, by diabetes type and sex. Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of age and calendar time in the interaction.}
+    \label{Japan apcageg}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/13_6.pdf}
+    \caption{Annual percent change in the incidence of diabetes in Scotland by age, by diabetes type and sex. Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of age and calendar time in the interaction.}
+    \label{Scotland apcageg}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/13_7.pdf}
+    \caption{Annual percent change in the incidence of diabetes in South Korea by age, by diabetes type and sex. Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of age and calendar time in the interaction.}
+    \label{South Korea apcageg}
+\end{figure}
+\begin{stlog}\input{log/13.log.tex}\end{stlog}
+\color{black}
+
+\clearpage
+\bibliography{/Users/jed/Documents/Library.bib}
+\end{document}
