@@ -96,6 +96,8 @@ The ordinal colour schemes used are \emph{inferno} and \emph{viridis} from the
 We start by examining crude incidence rates for each country.
 We will generate a table showing the overall counts for each country, then plots of the crude incidence
 of each type of diabetes by sex and year. 
+Also, because the diabetes type definitions require two years of non-insulin use to
+be effective, we will drop all data from 2021 or later. 
 
 \color{Blue4}
 ***/
@@ -103,7 +105,8 @@ of each type of diabetes by sex and year.
 
 texdoc stlog, cmdlog
 cd "/Users/jed/Documents/YO"
-import delimited "Consortium young-onset diabetes_incidence v2.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+drop if cal >= 2021
 bysort country (cal sex age) : egen lb = min(cal)
 bysort country (cal sex age) : egen ub = max(cal)
 tostring lb ub, replace
@@ -159,28 +162,35 @@ texdoc stlog close
 ***/
 
 texdoc stlog, cmdlog
-import delimited "Consortium young-onset diabetes_incidence v2.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country calendar_yr)
 gen inc1 = 1000*inc_t1d/pys_nondm
 gen inc2 = 1000*inc_t2d/pys_nondm
 gen inc3 = 1000*inc_unc/pys_nondm
-forval i = 1/6 {
+forval i = 1/8 {
 if `i' == 1 {
 local c = "Australia"
 }
 if `i' == 2 {
-local c = "Denmark"
+local c = "Catalonia, Spain"
 }
 if `i' == 3 {
-local c = "Finland"
+local c = "Denmark"
 }
 if `i' == 4 {
-local c = "Hungary"
+local c = "Finland"
 }
 if `i' == 5 {
-local c = "Scotland"
+local c = "Hungary"
 }
 if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
 local c = "South Korea"
 }
 twoway ///
@@ -203,31 +213,37 @@ texdoc graph, label(`c'crude) caption(Crude incidence of diabetes in `c' among p
 }
 texdoc stlog close
 texdoc stlog, cmdlog
-import delimited "Consortium young-onset diabetes_incidence v2.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar_yr)
 gen inc1 = 1000*inc_t1d/pys_nondm
 gen inc2 = 1000*inc_t2d/pys_nondm
 gen inc3 = 1000*inc_unc/pys_nondm
-forval i = 1/6 {
+forval i = 1/8 {
 if `i' == 1 {
 local c = "Australia"
 }
 if `i' == 2 {
-local c = "Denmark"
+local c = "Catalonia, Spain"
 }
 if `i' == 3 {
-local c = "Finland"
+local c = "Denmark"
 }
 if `i' == 4 {
-local c = "Hungary"
+local c = "Finland"
 }
 if `i' == 5 {
-local c = "Scotland"
+local c = "Hungary"
 }
 if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
 local c = "South Korea"
 }
-
 twoway ///
 (line inc1 calendar if country == "`c'" & sex == "F", color(dknavy)) ///
 (line inc1 calendar if country == "`c'" & sex == "M", color(dknavy) lpattern(shortdash)) ///
@@ -273,28 +289,35 @@ incidence of type 2 diabetes for each country (figures~\ref{Australia agespec} -
 ***/
 
 texdoc stlog, cmdlog
-forval i = 1/6 {
+forval i = 1/8 {
 foreach ii in M F {
 foreach iii in inc_t1d inc_t2d inc_uncertaint {
 if `i' == 1 {
 local c = "Australia"
 }
 if `i' == 2 {
-local c = "Denmark"
+local c = "Catalonia, Spain"
 }
 if `i' == 3 {
-local c = "Finland"
+local c = "Denmark"
 }
 if `i' == 4 {
-local c = "Hungary"
+local c = "Finland"
 }
 if `i' == 5 {
-local c = "Scotland"
+local c = "Hungary"
 }
 if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v2.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+drop if cal >= 2021
 keep if country == "`c'" & sex == "`ii'"
 rename age_gp age
 replace age = substr(age,1,2)
@@ -379,28 +402,33 @@ save APC_Rate_`i'_`ii'_`iii', replace
 }
 }
 }
-forval i = 1/6 {
+forval i = 1/8 {
 foreach ii in M F {
 foreach iii in inc_t1d inc_t2d inc_uncertaint {
 if `i' == 1 {
 local c = "Australia"
 }
 if `i' == 2 {
-local c = "Denmark"
+local c = "Catalonia, Spain"
 }
 if `i' == 3 {
-local c = "Finland"
+local c = "Denmark"
 }
 if `i' == 4 {
-local c = "Hungary"
+local c = "Finland"
 }
 if `i' == 5 {
-local c = "Scotland"
+local c = "Hungary"
 }
 if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
 local c = "South Korea"
 }
-
 if "`ii'" == "M" {
 local s = "Males"
 use viridis, clear
@@ -419,7 +447,6 @@ local col3 = var6[4]
 local col4 = var6[3]
 local col5 = var6[2]
 }
-
 if "`iii'" == "inc_t1d" {
 local oc = "Type 1 diabetes"
 }
@@ -472,23 +499,29 @@ graph save "Graph" Escape_`i'_`ii'_`iii', replace
 }
 texdoc stlog close
 texdoc stlog, cmdlog
-forval i = 1/6 {
+forval i = 1/8 {
 if `i' == 1 {
 local c = "Australia"
 }
 if `i' == 2 {
-local c = "Denmark"
+local c = "Catalonia, Spain"
 }
 if `i' == 3 {
-local c = "Finland"
+local c = "Denmark"
 }
 if `i' == 4 {
-local c = "Hungary"
+local c = "Finland"
 }
 if `i' == 5 {
-local c = "Scotland"
+local c = "Hungary"
 }
 if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
 local c = "South Korea"
 }
 graph combine ///
@@ -507,7 +540,8 @@ texdoc stlog close
 \color{black}
 
 To make comparison between countries easier, we will plot all curves for age 25 on the same graph 
-(and 20 and 30, to see if there is any difference depending on the age selected; figures ~\ref{agespec20} - ~\ref{agespec30}). \\
+(and 20 and 30, to see if there is any difference depending on the age selected; figures ~\ref{agespec20} - ~\ref{agespec30}).
+
 For these plots, we no longer use an ordinal colour scheme. We're using modified rainbow 
 (because some of the rainbow colours are really hard to see).
 
@@ -534,19 +568,21 @@ else {
 local oc = "Uncertain diabetes type"
 }
 local col1 = "0 0 255"
-local col2 = "255 0 255"
-local col3 = "255 0 0"
-local col4 = "255 125 0"
-local col5 = "0 125 0"
-local col6 = "0 175 255"
+local col2 = "75 0 130"
+local col3 = "255 0 255"
+local col4 = "255 0 0"
+local col5 = "255 125 0"
+local col6 = "0 125 0"
+local col7 = "0 175 255"
+local col8 = "0 0 0"
 clear
-forval i = 1/6 {
+forval i = 1/8 {
 append using APC_Rate_`i'_`ii'_`iii'
 }
 keep if age == `age'
 preserve
 bysort country : keep if _n == 1
-forval i = 1/6 {
+forval i = 1/8 {
 local C`i' = country[`i']
 }
 restore
@@ -563,13 +599,19 @@ twoway ///
 (line _Rate calendar if country == "`C5'", color("`col5'") lpattern(solid)) ///
 (rarea ub lb calendar if country == "`C6'", color("`col6'%30") fintensity(inten80) lwidth(none)) ///
 (line _Rate calendar if country == "`C6'", color("`col6'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C7'", color("`col7'%30") fintensity(inten80) lwidth(none)) ///
+(line _Rate calendar if country == "`C7'", color("`col7'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C8'", color("`col8'%30") fintensity(inten80) lwidth(none)) ///
+(line _Rate calendar if country == "`C8'", color("`col8'") lpattern(solid)) ///
 , legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
 order(2 "`C1'" ///
 4 "`C2'" ///
 6 "`C3'" ///
 8 "`C4'" ///
 10 "`C5'" ///
-12 "`C6'") ///
+12 "`C6'" ///
+14 "`C7'" ///
+16 "`C8'") ///
 cols(1)) ///
 graphregion(color(white)) ///
 ylabel(0.002 "0.002" ///
@@ -641,7 +683,8 @@ to 1-year age groups (using linear regression).
 ***/
 
 texdoc stlog, cmdlog
-import delimited "Consortium young-onset diabetes_incidence v2.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+drop if cal >= 2021
 keep if _n<=5
 keep age_gp esp2010
 rename age_gp age
@@ -706,28 +749,35 @@ error even if included)).
 
 texdoc stlog, cmdlog
 quietly {
-forval i = 1/6 {
+forval i = 1/8 {
 foreach ii in M F {
 foreach iii in inc_t1d inc_t2d inc_uncertaint {
 if `i' == 1 {
 local c = "Australia"
 }
 if `i' == 2 {
-local c = "Denmark"
+local c = "Catalonia, Spain"
 }
 if `i' == 3 {
-local c = "Finland"
+local c = "Denmark"
 }
 if `i' == 4 {
-local c = "Hungary"
+local c = "Finland"
 }
 if `i' == 5 {
-local c = "Scotland"
+local c = "Hungary"
 }
 if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v2.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+drop if cal >= 2021
 keep if country == "`c'" & sex == "`ii'"
 rename age_gp age
 replace age = substr(age,1,2)
@@ -837,18 +887,20 @@ else {
 local oc = "Uncertain diabetes type"
 }
 local col1 = "0 0 255"
-local col2 = "255 0 255"
-local col3 = "255 0 0"
-local col4 = "255 125 0"
-local col5 = "0 125 0"
-local col6 = "0 175 255"
+local col2 = "75 0 130"
+local col3 = "255 0 255"
+local col4 = "255 0 0"
+local col5 = "255 125 0"
+local col6 = "0 125 0"
+local col7 = "0 175 255"
+local col8 = "0 0 0"
 clear
-forval i = 1/6 {
+forval i = 1/8 {
 append using STD_Rate_`i'_`ii'_`iii'
 }
 preserve
 bysort country : keep if _n == 1
-forval i = 1/6 {
+forval i = 1/8 {
 local C`i' = country[`i']
 }
 restore
@@ -866,13 +918,19 @@ twoway ///
 (line stdrate calendar if country == "`C5'", color("`col5'") lpattern(solid)) ///
 (rarea ub lb calendar if country == "`C6'", color("`col6'%30") fintensity(inten80) lwidth(none)) ///
 (line stdrate calendar if country == "`C6'", color("`col6'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C7'", color("`col7'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C7'", color("`col7'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C8'", color("`col8'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C8'", color("`col8'") lpattern(solid)) ///
 , legend(symxsize(0.13cm) position(4) ring(0) region(lcolor(white) color(none)) ///
 order(2 "`C1'" ///
 4 "`C2'" ///
 6 "`C3'" ///
 8 "`C4'" ///
 10 "`C5'" ///
-12 "`C6'") ///
+12 "`C6'" ///
+14 "`C7'" ///
+16 "`C8'") ///
 cols(2)) ///
 graphregion(color(white)) ///
 ylabel(0.005 "0.005" ///
@@ -906,6 +964,10 @@ twoway ///
 (line stdrate calendar if country == "`C5'", color("`col5'") lpattern(solid)) ///
 (rarea ub lb calendar if country == "`C6'", color("`col6'%30") fintensity(inten80) lwidth(none)) ///
 (line stdrate calendar if country == "`C6'", color("`col6'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C7'", color("`col7'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C7'", color("`col7'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C8'", color("`col8'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C8'", color("`col8'") lpattern(solid)) ///
 , legend(off) ///
 graphregion(color(white)) ///
 ylabel(0.005 "0.005" ///
@@ -957,29 +1019,35 @@ figure~\ref{agespec25}). \\
 ***/
 
 texdoc stlog, cmdlog
-forval i = 1/6 {
+forval i = 1/8 {
 forval ii = 0/2 {
 forval iii = 1/3 {
-
 if `i' == 1 {
 local c = "Australia"
 }
 if `i' == 2 {
-local c = "Denmark"
+local c = "Catalonia, Spain"
 }
 if `i' == 3 {
-local c = "Finland"
+local c = "Denmark"
 }
 if `i' == 4 {
-local c = "Hungary"
+local c = "Finland"
 }
 if `i' == 5 {
-local c = "Scotland"
+local c = "Hungary"
 }
 if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v2.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+drop if cal >= 2021
 keep if country == "`c'" 
 if `ii' == 1 {
 keep if sex == "M"
@@ -1018,11 +1086,13 @@ clear
 svmat A
 gen country=""
 bysort A3 (A2) : replace country = "Australia" if A3 == 1 & _n == 1
-bysort A3 (A2) : replace country = "Denmark" if A3 == 2 & _n == 1
-bysort A3 (A2) : replace country = "Finland" if A3 == 3 & _n == 1
-bysort A3 (A2) : replace country = "Hungary" if A3 == 4 & _n == 1
-bysort A3 (A2) : replace country = "Scotland" if A3 == 5 & _n == 1
-bysort A3 (A2) : replace country = "South Korea" if A3 == 6 & _n == 1
+bysort A3 (A2) : replace country = "Catalonia, Spain" if A3 == 2 & _n == 1
+bysort A3 (A2) : replace country = "Denmark" if A3 == 3 & _n == 1
+bysort A3 (A2) : replace country = "Finland" if A3 == 4 & _n == 1
+bysort A3 (A2) : replace country = "Hungary" if A3 == 5 & _n == 1
+bysort A3 (A2) : replace country = "Japan" if A3 == 6 & _n == 1
+bysort A3 (A2) : replace country = "Scotland" if A3 == 7 & _n == 1
+bysort A3 (A2) : replace country = "South Korea" if A3 == 8 & _n == 1
 tostring A1 A2, replace format(%9.0f)
 bysort A3 (A2) : gen time = A1+"-"+A2 if _n == 1
 gen sex = "Overall" if A4 == 0
@@ -1095,28 +1165,35 @@ local A1`a' = agesp1[`a']
 local A2`a' = agesp2[`a']
 local A3`a' = agesp3[`a']
 }
-forval i = 1/6 {
+forval i = 1/8 {
 foreach ii in M F {
 foreach iii in inc_t1d inc_t2d inc_uncertaint {
 if `i' == 1 {
 local c = "Australia"
 }
 if `i' == 2 {
-local c = "Denmark"
+local c = "Catalonia, Spain"
 }
 if `i' == 3 {
-local c = "Finland"
+local c = "Denmark"
 }
 if `i' == 4 {
-local c = "Hungary"
+local c = "Finland"
 }
 if `i' == 5 {
-local c = "Scotland"
+local c = "Hungary"
 }
 if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v2.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+drop if cal >= 2021
 keep if country == "`c'" & sex == "`ii'"
 rename age_gp age
 replace age = substr(age,1,2)
@@ -1172,27 +1249,32 @@ save APC_age_`i'_`ii'_`iii'_2, replace
 }
 texdoc stlog close
 texdoc stlog, cmdlog
-forval i = 1/6 {
+forval i = 1/8 {
 foreach iii in inc_t1d inc_t2d inc_uncertaint {
 if `i' == 1 {
 local c = "Australia"
 }
 if `i' == 2 {
-local c = "Denmark"
+local c = "Catalonia, Spain"
 }
 if `i' == 3 {
-local c = "Finland"
+local c = "Denmark"
 }
 if `i' == 4 {
-local c = "Hungary"
+local c = "Finland"
 }
 if `i' == 5 {
-local c = "Scotland"
+local c = "Hungary"
 }
 if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
 local c = "South Korea"
 }
-
 if "`iii'" == "inc_t1d" {
 local oc = "Type 1 diabetes"
 }
