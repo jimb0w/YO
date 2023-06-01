@@ -105,7 +105,7 @@ be effective, we will drop all data from 2021 or later.
 
 texdoc stlog, cmdlog
 cd "/Users/jed/Documents/YO"
-import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v4.csv", varnames(1) clear
 drop if cal >= 2021
 bysort country (cal sex age) : egen lb = min(cal)
 bysort country (cal sex age) : egen ub = max(cal)
@@ -162,7 +162,7 @@ texdoc stlog close
 ***/
 
 texdoc stlog, cmdlog
-import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v4.csv", varnames(1) clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country calendar_yr)
 gen inc1 = 1000*inc_t1d/pys_nondm
@@ -213,7 +213,7 @@ texdoc graph, label(`c'crude) caption(Crude incidence of diabetes in `c' among p
 }
 texdoc stlog close
 texdoc stlog, cmdlog
-import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v4.csv", varnames(1) clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar_yr)
 gen inc1 = 1000*inc_t1d/pys_nondm
@@ -316,7 +316,7 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v4.csv", varnames(1) clear
 drop if cal >= 2021
 keep if country == "`c'" & sex == "`ii'"
 rename age_gp age
@@ -683,7 +683,7 @@ to 1-year age groups (using linear regression).
 ***/
 
 texdoc stlog, cmdlog
-import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v4.csv", varnames(1) clear
 drop if cal >= 2021
 keep if _n<=5
 keep age_gp esp2010
@@ -776,7 +776,7 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v4.csv", varnames(1) clear
 drop if cal >= 2021
 keep if country == "`c'" & sex == "`ii'"
 rename age_gp age
@@ -1046,7 +1046,7 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v4.csv", varnames(1) clear
 drop if cal >= 2021
 keep if country == "`c'" 
 if `ii' == 1 {
@@ -1154,7 +1154,7 @@ whereas the second includes a spline effect of age and the product of log-linear
 \color{Blue4}
 ***/
 
-texdoc stlog, cmdlog nodo
+texdoc stlog, cmdlog
 quietly {
 clear
 set obs 251
@@ -1192,7 +1192,7 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v3.csv", varnames(1) clear
+import delimited "Consortium young-onset diabetes_incidence v4.csv", varnames(1) clear
 drop if cal >= 2021
 keep if country == "`c'" & sex == "`ii'"
 rename age_gp age
