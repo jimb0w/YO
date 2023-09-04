@@ -63,6 +63,11 @@ Steno Diabetes Center Copenhagen, Gentofte, Denmark \\
 Department of Biostatistics, University of Copenhagen \\
 \\
 \noindent
+Agus Salim \\
+Chief Biostatician \\
+Baker Heart and Diabetes Institute, Melbourne, Australia \\
+\\
+\noindent
 Dianna Magliano \\
 Professor and Head of Diabetes and Population Health \\
 Baker Heart and Diabetes Institute, Melbourne, Australia \\
@@ -241,58 +246,156 @@ of age, period (calendar time; measured from 2010 (i.e., 2010 is set to 0)), and
 This is done separately for each country and sex. Moreover, because of the different years covered by each dataset,
 the knot locations are different for each country (and knot placement is as recommended by Harrell \cite{Harrell2001Springer} 
 for period and cohort effects).
-Then, we use this model to predict the incidence of type 2 diabetes
-for specific ages. These results are presented in figures showing the age-specific
-incidence of type 2 diabetes for each country (figures~\ref{Australia agespec} - ~\ref{South Korea agespec}).
+
+Next, we check these models have fit the data appropriately by investigating the Pearson residuals. 
+Then, we use this model to predict the incidence of diabetes by age and calendar time. 
+These results are presented in figures showing the 
+incidence of type 2 diabetes for each country.
 
 \color{Blue4}
 \begin{stlog}\input{log/4.log.tex}\end{stlog}
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{log/5.pdf}
-    \caption{Incidence of diabetes in Australia for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
+    \caption{Pearson residuals for the age-period-cohort model in Australia, by diabetes type and sex}
     \label{Australia agespec}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{log/5_1.pdf}
+    \caption{Incidence of diabetes in Australia for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
+    \label{Australia agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_2.pdf}
+    \caption{Incidence of diabetes in Australia by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex}
+    \label{Australia agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_3.pdf}
+    \caption{Pearson residuals for the age-period-cohort model in Catalonia, Spain, by diabetes type and sex}
+    \label{Catalonia, Spain agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_4.pdf}
     \caption{Incidence of diabetes in Catalonia, Spain for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
     \label{Catalonia, Spain agespec}
 \end{figure}
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{log/5_2.pdf}
+    \includegraphics[width=0.8\textwidth]{log/5_5.pdf}
+    \caption{Incidence of diabetes in Catalonia, Spain by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex}
+    \label{Catalonia, Spain agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_6.pdf}
+    \caption{Pearson residuals for the age-period-cohort model in Denmark, by diabetes type and sex}
+    \label{Denmark agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_7.pdf}
     \caption{Incidence of diabetes in Denmark for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
     \label{Denmark agespec}
 \end{figure}
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{log/5_3.pdf}
+    \includegraphics[width=0.8\textwidth]{log/5_8.pdf}
+    \caption{Incidence of diabetes in Denmark by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex}
+    \label{Denmark agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_9.pdf}
+    \caption{Pearson residuals for the age-period-cohort model in Finland, by diabetes type and sex}
+    \label{Finland agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_10.pdf}
     \caption{Incidence of diabetes in Finland for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
     \label{Finland agespec}
 \end{figure}
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{log/5_4.pdf}
+    \includegraphics[width=0.8\textwidth]{log/5_11.pdf}
+    \caption{Incidence of diabetes in Finland by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex}
+    \label{Finland agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_12.pdf}
+    \caption{Pearson residuals for the age-period-cohort model in Hungary, by diabetes type and sex}
+    \label{Hungary agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_13.pdf}
     \caption{Incidence of diabetes in Hungary for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
     \label{Hungary agespec}
 \end{figure}
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{log/5_5.pdf}
+    \includegraphics[width=0.8\textwidth]{log/5_14.pdf}
+    \caption{Incidence of diabetes in Hungary by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex}
+    \label{Hungary agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_15.pdf}
+    \caption{Pearson residuals for the age-period-cohort model in Japan, by diabetes type and sex}
+    \label{Japan agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_16.pdf}
     \caption{Incidence of diabetes in Japan for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
     \label{Japan agespec}
 \end{figure}
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{log/5_6.pdf}
+    \includegraphics[width=0.8\textwidth]{log/5_17.pdf}
+    \caption{Incidence of diabetes in Japan by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex}
+    \label{Japan agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_18.pdf}
+    \caption{Pearson residuals for the age-period-cohort model in Scotland, by diabetes type and sex}
+    \label{Scotland agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_19.pdf}
     \caption{Incidence of diabetes in Scotland for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
     \label{Scotland agespec}
 \end{figure}
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\textwidth]{log/5_7.pdf}
+    \includegraphics[width=0.8\textwidth]{log/5_20.pdf}
+    \caption{Incidence of diabetes in Scotland by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex}
+    \label{Scotland agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_21.pdf}
+    \caption{Pearson residuals for the age-period-cohort model in South Korea, by diabetes type and sex}
+    \label{South Korea agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_22.pdf}
     \caption{Incidence of diabetes in South Korea for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex}
+    \label{South Korea agespec}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{log/5_23.pdf}
+    \caption{Incidence of diabetes in South Korea by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex}
     \label{South Korea agespec}
 \end{figure}
 \begin{stlog}\input{log/5.log.tex}\end{stlog}
@@ -301,8 +404,7 @@ incidence of type 2 diabetes for each country (figures~\ref{Australia agespec} -
 To make comparison between countries easier, we will plot all curves for age 25 on the same graph 
 (and 20 and 30, to see if there is any difference depending on the age selected; figures ~\ref{agespec20} - ~\ref{agespec30}).
 
-For these plots, we no longer use an ordinal colour scheme. We're using modified rainbow 
-(because some of the rainbow colours are really hard to see).
+For these plots, we no longer use an ordinal colour scheme. We're using rainbow.
 
 \color{Blue4}
 \begin{stlog}\input{log/6.log.tex}\end{stlog}
@@ -368,7 +470,7 @@ error even if included)).
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{log/10.pdf}
-    \caption{Age-standardized incidence of diabetes for people aged 15-39 years, by diabetes type and sex}
+    \caption{Age-standardized incidence of diabetes for people aged 15-39 years, by diabetes type and sex. South Korea is excluded from type 1 diabetes due to insufficent numbers.}
     \label{STDfig}
 \end{figure}
 \begin{stlog}\input{log/10.log.tex}\end{stlog}
