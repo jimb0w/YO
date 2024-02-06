@@ -13,7 +13,7 @@ set linesize 100
 \usepackage[x11names]{xcolor}
 \bibliographystyle{unsrt}
 \usepackage{natbib}
-
+\usepackage{pdflscape}
 \usepackage{chngcntr}
 \counterwithin{figure}{section}
 \counterwithin{table}{section}
@@ -35,7 +35,6 @@ set linesize 100
         \Huge
         \textbf{Trends in incidence of young-onset diabetes by type: 
 a multi-national population-based study \\
- \\
 Protocol}
 \color{black}
 \rule{16cm}{2mm} \\
@@ -219,8 +218,6 @@ xtitle("Calendar year") ///
 title("`c'", placement(west) color(gs0) size(medium))
 texdoc graph, label(`c'crude) caption(Crude incidence of diabetes in `c' among people aged 15-39 years, by diabetes type)
 }
-texdoc stlog close
-texdoc stlog, cmdlog
 import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar_yr)
@@ -981,6 +978,7 @@ Possession_M.gph ///
 , altshrink rows(1) xsize(10) graphregion(color(white))
 texdoc graph, label(smr111) caption(Incidence rate ratio for type 2 vs. type 1 diabetes ///
 , by sex. South Korea is excluded due to insufficient numbers in type 1 diabetes.)
+graph export "/Users/jed/Documents/YO/Figure 3.pdf", as(pdf) name("Graph") replace
 texdoc stlog close
 
 /***
@@ -1470,6 +1468,7 @@ Alive_M_inc_uncertaint_STD.gph ///
 , altshrink rows(3) xsize(3.3) graphregion(color(white))
 texdoc graph, label(STDfig) caption(Age-standardized incidence of diabetes for people aged 15-39 years, by diabetes type and sex. ///
 South Korea is excluded from type 1 diabetes due to insufficent numbers.)
+graph export "/Users/jed/Documents/YO/Figure 1.pdf", as(pdf) name("Graph") replace
 texdoc stlog close
 
 /***
@@ -1839,10 +1838,7 @@ set linesize 100
 \usepackage[x11names]{xcolor}
 \bibliographystyle{unsrt}
 \usepackage{natbib}
-
-\usepackage{chngcntr}
-\counterwithin{figure}{section}
-\counterwithin{table}{section}
+\usepackage{pdflscape}
 
 \usepackage{multirow}
 \usepackage{booktabs}
@@ -1863,7 +1859,6 @@ set linesize 100
         \Huge
         \textbf{Trends in incidence of young-onset diabetes by type: 
 a multi-national population-based study \\
- \\
 Appendix}
 \rule{16cm}{2mm} \\
 \Large
@@ -1969,6 +1964,9 @@ or national population-based survey with $\geq$80\% response rate (1 point)
 
 \noindent Thus, the total possible score is 8.
 
+\clearpage
+\section{Supplementary Tables}
+
 \begin{table}[h!]
   \begin{center}
     \caption{Diabetes definition by data source}
@@ -1979,7 +1977,7 @@ or national population-based survey with $\geq$80\% response rate (1 point)
       header=false,
       string type,
       display columns/0/.style={column name=Jurisdiction, column type={l}, text indicator="},
-      display columns/1/.style={column name=Diabetes definition, column type={l}},
+      display columns/1/.style={column name=Diabetes definition, column type={l}, column type={p{7.5cm}}},
       display columns/2/.style={column name=Gestational diabetes excluded, column type={l}},
       every head row/.style={
         before row={\toprule
@@ -1993,7 +1991,7 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
 \end{table}
 
 
-
+\begin{landscape}
 \begin{table}[h!]
   \begin{center}
     \caption{Quality assessment of the included data sources}
@@ -2001,38 +1999,330 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
      \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
       multicolumn names=l,
       col sep=colon,
-      header=true,
+      header=false,
       string type,
-      display columns/0/.style={column name=Country/Region, column type={l}, text indicator="},
-      display columns/1/.style={column name=Origin of data, column type={l}},
-      display columns/2/.style={column name=Representativeness of population, column type={l}},
-      display columns/2/.style={column name=Sample size at time points, column type={l}},
-      display columns/2/.style={column name=Assessment of diabetes, column type={l}},
-      display columns/2/.style={column name=Exclusion of gestational diabetes, column type={l}},
-      display columns/2/.style={column name=Completeness (no. of data points), column type={l}},
-      display columns/2/.style={column name=Total Score, column type={l}},
+      display columns/0/.style={column name=, column type={l}},
+      display columns/1/.style={column name=, column type={l}, column type={p{4cm}}},
+      display columns/2/.style={column name=, column type={l}, column type={p{2cm}}},
+      display columns/3/.style={column name=, column type={l}, column type={p{2cm}}},
+      display columns/4/.style={column name=, column type={l}, column type={p{2cm}}},
+      display columns/5/.style={column name=, column type={l}, column type={p{2cm}}},
+      display columns/6/.style={column name=, column type={l}, column type={p{2cm}}},
+      display columns/7/.style={column name=, column type={l}, column type={p{2cm}}},
+      every head row/.style={
+        after row={\midrule}
+            },
+        every last row/.style={after row=\bottomrule},
+		every row no 1/.style={before row=\hline},
+		every row no 2/.style={before row=\hline},
+    ]{QA.csv}
+  \end{center}
+\end{table}
+\end{landscape}
+
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Average annual percent change in the incidence of diabetes, by country, sex, and diabetes type. Adjusted for age.}
+    \label{APCs}
+     \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
+      multicolumn names,
+      col sep=colon,
+      header=false,
+      string type,
+	  display columns/0/.style={column name=Country,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+	  display columns/1/.style={column name=Period,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+      display columns/2/.style={column name=Sex, column type={l}, text indicator="},
+      display columns/3/.style={column name=Type 1 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/4/.style={column name=Type 2 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/5/.style={column name=Uncertain diabetes type, column type={r}, column type/.add={|}{|}},
       every head row/.style={
         before row={\toprule
 					},
         after row={\midrule}
             },
+        every nth row={3}{before row=\midrule},
         every last row/.style={after row=\bottomrule},
-    ]{QA.csv}
+    ]{APCs.csv}
   \end{center}
-ICD=International Classification of Diseases; ICD-10=International Classification of Diseases, 10th edition. 
 \end{table}
 
+\clearpage
+\section{Supplementary Figures}
 
-
-\color{Blue4}
 ***/
 
+texdoc stlog, nolog
+import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+drop if cal >= 2021
+collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country calendar_yr)
+gen inc1 = 1000*inc_t1d/pys_nondm
+gen inc2 = 1000*inc_t2d/pys_nondm
+gen inc3 = 1000*inc_unc/pys_nondm
+forval i = 1/8 {
+if `i' == 1 {
+local c = "Australia"
+}
+if `i' == 2 {
+local c = "Catalonia, Spain"
+}
+if `i' == 3 {
+local c = "Denmark"
+}
+if `i' == 4 {
+local c = "Finland"
+}
+if `i' == 5 {
+local c = "Hungary"
+}
+if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
+local c = "South Korea"
+}
+twoway ///
+(line inc1 calendar if country == "`c'", color(dknavy)) ///
+(line inc2 calendar if country == "`c'", color(cranberry)) ///
+(line inc3 calendar if country == "`c'", color(magenta)) ///
+, legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
+order(1 "Type 1 diabetes" ///
+2 "Type 2 diabetes" ///
+3 "Uncertain type") ///
+rows(3)) ///
+graphregion(color(white)) ///
+xlabel(1995(5)2020) ///
+ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
+yscale(log range(0.05 6)) ///
+ytitle("Incidence (per 1,000 person-years)") ///
+xtitle("Calendar year") ///
+title("`c'", placement(west) color(gs0) size(medium))
+texdoc graph, label(`c'crude) caption(Crude incidence of diabetes in `c' among people aged 15-39 years, by diabetes type)
+}
+import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+drop if cal >= 2021
+collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar_yr)
+gen inc1 = 1000*inc_t1d/pys_nondm
+gen inc2 = 1000*inc_t2d/pys_nondm
+gen inc3 = 1000*inc_unc/pys_nondm
+forval i = 1/8 {
+if `i' == 1 {
+local c = "Australia"
+}
+if `i' == 2 {
+local c = "Catalonia, Spain"
+}
+if `i' == 3 {
+local c = "Denmark"
+}
+if `i' == 4 {
+local c = "Finland"
+}
+if `i' == 5 {
+local c = "Hungary"
+}
+if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
+local c = "South Korea"
+}
+twoway ///
+(line inc1 calendar if country == "`c'" & sex == "F", color(dknavy)) ///
+(line inc1 calendar if country == "`c'" & sex == "M", color(dknavy) lpattern(shortdash)) ///
+(line inc2 calendar if country == "`c'" & sex == "F", color(cranberry)) ///
+(line inc2 calendar if country == "`c'" & sex == "M", color(cranberry) lpattern(shortdash)) ///
+(line inc3 calendar if country == "`c'" & sex == "F", color(magenta)) ///
+(line inc3 calendar if country == "`c'" & sex == "M", color(magenta) lpattern(shortdash)) ///
+, legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
+order(1 "Type 1 diabetes" ///
+3 "Type 2 diabetes" ///
+5 "Uncertain type") ///
+rows(3)) ///
+graphregion(color(white)) ///
+xlabel(1995(5)2020) ///
+ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
+yscale(log range(0.05 6)) ///
+ytitle("Incidence (per 1,000 person-years)") ///
+xtitle("Calendar year") ///
+title("`c'", placement(west) color(gs0) size(medium))
+texdoc graph, label(`c'crude) caption(Crude incidence of diabetes in `c' among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.)
+}
+texdoc stlog close
 
-export delimited using QA.csv, delimiter(":") novarnames replace
+/***
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{APCfig1.pdf}
+    \caption{Average annual percent change in the age-standardised incidence of diabetes, by jurisdiction and diabetes type}
+    \label{AAPCfig1}
+\end{figure}
+
+***/
+
+texdoc stlog, nolog
+forval i = 1/8 {
+if `i' == 1 {
+local c = "Australia"
+}
+if `i' == 2 {
+local c = "Catalonia, Spain"
+}
+if `i' == 3 {
+local c = "Denmark"
+}
+if `i' == 4 {
+local c = "Finland"
+}
+if `i' == 5 {
+local c = "Hungary"
+}
+if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
+local c = "South Korea"
+}
+graph combine ///
+TTFATF_`i'_F_inc_t1d.gph ///
+TTFATF_`i'_M_inc_t1d.gph ///
+TTFATF_`i'_F_inc_t2d.gph ///
+TTFATF_`i'_M_inc_t2d.gph ///
+TTFATF_`i'_F_inc_uncertaint.gph ///
+TTFATF_`i'_M_inc_uncertaint.gph ///
+, altshrink rows(3) xsize(3.5) graphregion(color(white))
+texdoc graph, label(`c' agespec) caption(Incidence of diabetes in `c' by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex)
+}
+forval i = 1/8 {
+if `i' == 1 {
+local c = "Australia"
+}
+if `i' == 2 {
+local c = "Catalonia, Spain"
+}
+if `i' == 3 {
+local c = "Denmark"
+}
+if `i' == 4 {
+local c = "Finland"
+}
+if `i' == 5 {
+local c = "Hungary"
+}
+if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
+local c = "South Korea"
+}
+graph combine ///
+Escape_`i'_F_inc_t1d.gph ///
+Escape_`i'_M_inc_t1d.gph ///
+Escape_`i'_F_inc_t2d.gph ///
+Escape_`i'_M_inc_t2d.gph ///
+Escape_`i'_F_inc_uncertaint.gph ///
+Escape_`i'_M_inc_uncertaint.gph ///
+, altshrink rows(3) xsize(3.5) graphregion(color(white))
+texdoc graph, label(`c' agespec) caption(Incidence of diabetes in `c' for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex)
+}
+forval i = 1/8 {
+foreach iii in inc_t1d inc_t2d inc_uncertaint {
+if `i' == 1 {
+local c = "Australia"
+}
+if `i' == 2 {
+local c = "Catalonia, Spain"
+}
+if `i' == 3 {
+local c = "Denmark"
+}
+if `i' == 4 {
+local c = "Finland"
+}
+if `i' == 5 {
+local c = "Hungary"
+}
+if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
+local c = "South Korea"
+}
+if "`iii'" == "inc_t1d" {
+local oc = "Type 1 diabetes"
+}
+else if "`iii'" == "inc_t2d" {
+local oc = "Type 2 diabetes"
+}
+else {
+local oc = "Uncertain diabetes type"
+}
+
+forval a = 1/2 {
+clear
+append using APC_age_`i'_M_`iii'_`a'
+append using APC_age_`i'_F_`iii'_`a'
+if "`iii'" == "inc_t1d" {
+drop if age > 35
+}
+twoway ///
+(rarea ub lb age if sex == "M", color("blue%30") fintensity(inten80) lwidth(none)) ///
+(line apc age if sex == "M", color("blue") lpattern(solid)) ///
+(rarea ub lb age if sex == "F", color("red%30") fintensity(inten80) lwidth(none)) ///
+(line apc age if sex == "F", color("red") lpattern(solid)) ///
+,legend(ring(0) symxsize(0.13cm) position(2) region(lcolor(white) color(none)) ///
+order(2 "Males" ///
+4 "Females")  ///
+cols(1)) ///
+bgcolor(white) graphregion(color(white)) ///
+ytitle("Annual change in incidence rates (%)", xoffset(-1)) ///
+yline(0, lcolor(gs0)) ///
+ylabel(-5(5)15, angle(0)) ///
+xtitle("Attained age (years)") ///
+xlabel(15(5)40) ///
+title("`c' - `oc'", placement(west) size(medium) color(gs0))
+graph save "Graph" Apage_`i'_`iii'_`a', replace
+}
+}
+graph combine ///
+Apage_`i'_inc_t1d_1.gph ///
+Apage_`i'_inc_t1d_2.gph ///
+Apage_`i'_inc_t2d_1.gph ///
+Apage_`i'_inc_t2d_2.gph ///
+Apage_`i'_inc_uncertaint_1.gph ///
+Apage_`i'_inc_uncertaint_2.gph ///
+, altshrink rows(3) xsize(3.5) graphregion(color(white))
+texdoc graph, label(`c' apcageg) caption(Annual percent change in the incidence of diabetes in `c' by age, by diabetes type and sex. ///
+Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction ///
+between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of ///
+age and calendar time in the interaction.)
+}
+texdoc stlog close
 
 
 /***
-\color{black}
 
 \clearpage
 \bibliography{/Users/jed/Documents/Library.bib}
