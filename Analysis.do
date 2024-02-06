@@ -33,7 +33,10 @@ set linesize 100
 \begin{titlepage}
     \begin{flushright}
         \Huge
-        \textbf{International trends in the incidence of diabetes in young people}
+        \textbf{Trends in incidence of young-onset diabetes by type: 
+a multi-national population-based study \\
+ \\
+Protocol}
 \color{black}
 \rule{16cm}{2mm} \\
 \Large
@@ -108,7 +111,7 @@ be effective, we will drop all data from 2021 or later.
 ***/
 
 
-texdoc stlog, cmdlog
+texdoc stlog, cmdlog nodo
 cd "/Users/jed/Documents/YO"
 import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
 drop if cal >= 2021
@@ -295,7 +298,7 @@ incidence of type 2 diabetes for each country.
 \color{Blue4}
 ***/
 
-texdoc stlog, cmdlog
+texdoc stlog, cmdlog nodo
 forval i = 1/8 {
 foreach ii in M F {
 foreach iii in inc_t1d inc_t2d inc_uncertaint {
@@ -333,7 +336,7 @@ rename age_gp age
 replace age = substr(age,1,2)
 destring age, replace
 replace age = age+2.5
-replace calendar = calendar-2010
+replace calendar = calendar-2009.5
 gen coh = calendar-age
 centile(age), centile(5 35 65 95)
 local A1 = r(c_1)
@@ -361,7 +364,7 @@ centile calendar, centile(5 35 65 95)
 local CK1 = r(c_1)
 local CK2 = r(c_2)
 local CK3 = r(c_3)
-local CK3 = r(c_4)
+local CK4 = r(c_4)
 mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4')
 }
 else {
@@ -369,8 +372,8 @@ centile calendar, centile(5 27.5 50 72.5 95)
 local CK1 = r(c_1)
 local CK2 = r(c_2)
 local CK3 = r(c_3)
-local CK3 = r(c_4)
-local CK3 = r(c_5)
+local CK4 = r(c_4)
+local CK5 = r(c_5)
 mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
 }
 centile(coh), centile(5 35 65 95)
@@ -389,7 +392,7 @@ bysort cal age : replace age = round(age+((_n/10)-2.6),0.1)
 sort age cal
 expand 10
 sort age cal
-bysort age cal : replace cal = cal+(_n/10)-0.1
+bysort age cal : replace cal = cal+(_n/10)-0.6
 replace pys = pys/10
 gen coh = calendar-age
 mkspline agesp = age, cubic knots(`A1' `A2' `A3' `A4')
@@ -414,7 +417,7 @@ gen ub = exp(ln(_Rate)+1.96*errr)
 gen country = "`c'"
 gen sex = "`ii'"
 gen OC = "`iii'"
-replace cal = cal+2010
+replace cal = cal+2009.5
 tostring age, replace force format(%9.1f)
 destring age, replace
 save APC_Rate_`i'_`ii'_`iii', replace
@@ -665,7 +668,7 @@ For these plots, we no longer use an ordinal colour scheme. We're using rainbow.
 \color{Blue4}
 ***/
 
-texdoc stlog, cmdlog
+texdoc stlog, cmdlog nodo
 forval age = 20(5)30 {
 foreach ii in M F {
 foreach iii in inc_t1d inc_t2d inc_uncertaint {
@@ -787,8 +790,204 @@ texdoc stlog close
 \color{black}
 
 \clearpage
-\section{Age-standardized rates}
 
+Finally, we will formalise a comparison of the incidence rate between type 1 and type 2 diabetes. 
+For this, we will fit a model with spline effects of calendar time, and an interaction 
+between age and diabetes type. 
+ 
+\color{Blue4}
+***/
+
+texdoc stlog, cmdlog nodo
+forval i = 1/8 {
+foreach ii in M F {
+if `i' == 1 {
+local c = "Australia"
+}
+if `i' == 2 {
+local c = "Catalonia, Spain"
+}
+if `i' == 3 {
+local c = "Denmark"
+}
+if `i' == 4 {
+local c = "Finland"
+}
+if `i' == 5 {
+local c = "Hungary"
+}
+if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
+local c = "South Korea"
+}
+import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+drop if cal >= 2021
+drop if age_gp == "35-39"
+keep if country == "`c'" & sex == "`ii'"
+rename age_gp age
+expand 2
+bysort cal age : gen DT = _n
+gen inc = inc_t1d if DT == 1
+replace inc = inc_t2d if DT == 2
+replace age = substr(age,1,2)
+destring age, replace
+replace age = age+2.5
+replace calendar = calendar-2009.5
+gen coh = calendar-age
+centile(age), centile(5 35 65 95)
+local A1 = r(c_1)
+local A2 = r(c_2)
+local A3 = r(c_3)
+local A4 = r(c_4)
+mkspline agesp = age, cubic knots(`A1' `A2' `A3' `A4')
+preserve
+clear
+set obs 20
+gen age = _n+14
+mkspline agesp = age, cubic knots(`A1' `A2' `A3' `A4')
+forval a = 1/20 {
+local A1`a' = agesp1[`a']
+local A2`a' = agesp2[`a']
+local A3`a' = agesp3[`a']
+}
+restore
+su(calendar), detail
+local rang = r(max)-r(min)
+if `rang' < 8 {
+centile calendar, centile(25 75)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2')
+}
+else if inrange(`rang',8,11.9) {
+centile calendar, centile(10 50 90)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3')
+}
+else if inrange(`rang',12,15.9) {
+centile calendar, centile(5 35 65 95)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+local CK4 = r(c_4)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4')
+}
+else {
+centile calendar, centile(5 27.5 50 72.5 95)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+local CK4 = r(c_4)
+local CK5 = r(c_5)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
+}
+poisson inc i.DT##c.agesp* timesp*, exposure(pys)
+matrix A = (.,.,.)
+forval a = 1/20 {
+margins, dydx(DT) at(agesp1==`A1`a'' agesp2==`A2`a'' agesp3==`A3`a'') predict(xb)
+matrix A = (A\r(table)[1,2],r(table)[5,2],r(table)[6,2])
+}
+clear
+set obs 21
+gen age = _n+13
+svmat A
+drop if age == 14
+replace A1 = exp(A1)
+replace A2 = exp(A2)
+replace A3 = exp(A3)
+gen country = "`c'"
+gen sex = "`ii'"
+save SMR_`i'_`ii', replace
+}
+}
+foreach ii in M F {
+if "`ii'" == "M" {
+local iii = "Males"
+}
+if "`ii'" == "F" {
+local iii = "Females"
+}
+local col1 = "0 0 255"
+local col2 = "75 0 130"
+local col3 = "255 0 255"
+local col4 = "255 0 0"
+local col5 = "255 125 0"
+local col6 = "0 125 0"
+local col7 = "0 175 255"
+local col8 = "0 0 0"
+clear
+forval i = 1/7 {
+append using SMR_`i'_`ii'
+}
+preserve
+bysort country : keep if _n == 1
+forval i = 1/7 {
+local C`i' = country[`i']
+}
+restore
+twoway ///
+(rarea A3 A2 age if country == "`C1'", color("`col1'%30") fintensity(inten80) lwidth(none)) ///
+(line A1 age if country == "`C1'", color("`col1'") lpattern(solid)) ///
+(rarea A3 A2 age if country == "`C2'", color("`col2'%30") fintensity(inten80) lwidth(none)) ///
+(line A1 age if country == "`C2'", color("`col2'") lpattern(solid)) ///
+(rarea A3 A2 age if country == "`C3'", color("`col3'%30") fintensity(inten80) lwidth(none)) ///
+(line A1 age if country == "`C3'", color("`col3'") lpattern(solid)) ///
+(rarea A3 A2 age if country == "`C4'", color("`col4'%30") fintensity(inten80) lwidth(none)) ///
+(line A1 age if country == "`C4'", color("`col4'") lpattern(solid)) ///
+(rarea A3 A2 age if country == "`C5'", color("`col5'%30") fintensity(inten80) lwidth(none)) ///
+(line A1 age if country == "`C5'", color("`col5'") lpattern(solid)) ///
+(rarea A3 A2 age if country == "`C6'", color("`col6'%30") fintensity(inten80) lwidth(none)) ///
+(line A1 age if country == "`C6'", color("`col6'") lpattern(solid)) ///
+(rarea A3 A2 age if country == "`C7'", color("`col7'%30") fintensity(inten80) lwidth(none)) ///
+(line A1 age if country == "`C7'", color("`col7'") lpattern(solid)) ///
+, legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
+order(2 "`C1'" ///
+4 "`C2'" ///
+6 "`C3'" ///
+8 "`C4'" ///
+10 "`C5'" ///
+12 "`C6'" ///
+14 "`C7'") ///
+cols(1)) ///
+graphregion(color(white)) ///
+ylabel( ///
+0.02 "0.02" ///
+0.05 "0.05" ///
+0.1 "0.1" ///
+0.2 "0.2" ///
+0.5 "0.5" ///
+1.0 "1.0" ///
+2.0 "2.0" ///
+5.0 "5.0" 10 "10.0" 20 "20.0", grid angle(0)) ///
+yscale(range(0.02 20) log) ///
+xlabel(15(5)35, nogrid) ///
+ytitle("Incidence rate ratio", margin(a+2)) ///
+xtitle("Age") yline(1, lcol(black)) ///
+title("`iii'", placement(west) color(black) size(medium))
+graph save "Graph" Possession_`ii', replace
+}
+texdoc stlog close
+texdoc stlog, cmdlog
+graph combine ///
+Possession_F.gph ///
+Possession_M.gph ///
+, altshrink rows(1) xsize(10) graphregion(color(white))
+texdoc graph, label(smr111) caption(Incidence rate ratio for type 2 vs. type 1 diabetes ///
+, by sex. South Korea is excluded due to insufficient numbers in type 1 diabetes.)
+texdoc stlog close
+
+/***
+\color{black}
+
+\clearpage
+\section{Age-standardized rates}
 
 Additionally, we will age-standardise the incidence rates to the European population in 2010. 
 This will be done using the same Age-Period-Cohort models described above. In this analysis, we will take
@@ -887,7 +1086,7 @@ error even if included)).
 \color{Blue4}
 ***/
 
-texdoc stlog, cmdlog
+texdoc stlog, cmdlog nodo
 quietly {
 forval i = 1/8 {
 foreach ii in M F {
@@ -926,7 +1125,7 @@ rename age_gp age
 replace age = substr(age,1,2)
 destring age, replace
 replace age = age+2.5
-replace calendar = calendar-2010
+replace calendar = calendar-2009.5
 gen coh = calendar-age
 centile(age), centile(5 35 65 95)
 local A1 = r(c_1)
@@ -954,7 +1153,7 @@ centile calendar, centile(5 35 65 95)
 local CK1 = r(c_1)
 local CK2 = r(c_2)
 local CK3 = r(c_3)
-local CK3 = r(c_4)
+local CK4 = r(c_4)
 mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4')
 }
 else {
@@ -962,8 +1161,8 @@ centile calendar, centile(5 27.5 50 72.5 95)
 local CK1 = r(c_1)
 local CK2 = r(c_2)
 local CK3 = r(c_3)
-local CK3 = r(c_4)
-local CK3 = r(c_5)
+local CK4 = r(c_4)
+local CK5 = r(c_5)
 mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
 }
 centile(coh), centile(5 35 65 95)
@@ -994,7 +1193,7 @@ mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
 }
 mkspline cohsp = coh, cubic knots(`CO1' `CO2' `CO3' `CO4')
 predict _Rate, ir
-replace cal = cal+2010
+replace cal = cal+2009.5
 keep cal age pys _Rate
 if "`iii'" == "inc_t1d" {
 merge m:1 age using refpop1
@@ -1288,7 +1487,7 @@ figure~\ref{agespec25}). \\
 \color{Blue4}
 ***/
 
-texdoc stlog, cmdlog
+texdoc stlog, cmdlog nodo
 forval i = 1/8 {
 forval ii = 0/2 {
 forval iii = 1/3 {
@@ -1335,7 +1534,7 @@ replace age = age+2.5
 su(calendar), detail
 local lb = r(min)
 local ub = r(max)
-replace calendar = calendar-2010
+replace calendar = calendar-2009.5
 gen coh = calendar-age
 centile(age), centile(5 35 65 95)
 local A1 = r(c_1)
@@ -1432,7 +1631,7 @@ whereas the second includes a spline effect of age and the product of log-linear
 \color{Blue4}
 ***/
 
-texdoc stlog, cmdlog
+texdoc stlog, cmdlog nodo
 quietly {
 forval i = 1/8 {
 foreach ii in M F {
@@ -1471,7 +1670,7 @@ rename age_gp age
 replace age = substr(age,1,2)
 destring age, replace
 replace age = age+2.5
-replace calendar = calendar-2010
+replace calendar = calendar-2009.5
 centile(age), centile(5 35 65 95)
 local A1 = r(c_1)
 local A2 = r(c_2)
@@ -1623,3 +1822,222 @@ texdoc stlog close
 ***/
 
 texdoc close
+
+
+
+texdoc init YO_SA, replace logdir(logsa) gropts(optargs(width=0.8\textwidth))
+set linesize 100
+
+
+/***
+
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{siunitx}
+\usepackage{hyperref,graphicx,booktabs,dcolumn}
+\usepackage{stata}
+\usepackage[x11names]{xcolor}
+\bibliographystyle{unsrt}
+\usepackage{natbib}
+
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+
+\usepackage{multirow}
+\usepackage{booktabs}
+
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+\newcommand{\thedate}{\today}
+
+\usepackage{pgfplotstable}
+\renewcommand{\figurename}{Supplementary Figure}
+\renewcommand{\tablename}{Supplementary Table}
+
+\begin{document}
+
+
+\begin{titlepage}
+    \begin{flushright}
+        \Huge
+        \textbf{Trends in incidence of young-onset diabetes by type: 
+a multi-national population-based study \\
+ \\
+Appendix}
+\rule{16cm}{2mm} \\
+\Large
+\thedate \\
+       \vfill
+    \end{flushright}
+        \Large
+
+\noindent
+Jedidiah Morton \\
+\color{blue}
+\href{mailto:Jedidiah.Morton@Monash.edu}{Jedidiah.Morton@monash.edu} \\ 
+\color{black}
+Research Fellow \\
+\color{blue}
+\color{black}
+Monash University, Melbourne, Australia \\\
+Baker Heart and Diabetes Institute, Melbourne, Australia \\
+\\
+\noindent
+Lei Chen \\
+Research Officer \\
+Baker Heart and Diabetes Institute, Melbourne, Australia \\
+\\
+\noindent
+Bendix Carstensen \\
+Senior Statistician \\
+Steno Diabetes Center Copenhagen, Gentofte, Denmark \\
+Department of Biostatistics, University of Copenhagen \\
+\\
+\noindent
+Agus Salim \\
+Chief Biostatician \\
+Baker Heart and Diabetes Institute, Melbourne, Australia \\
+\\
+\noindent
+Dianna Magliano \\
+Professor and Head of Diabetes and Population Health \\
+Baker Heart and Diabetes Institute, Melbourne, Australia \\
+
+\end{titlepage}
+
+\pagebreak
+\tableofcontents
+
+\listoftables
+\listoffigures
+
+\clearpage
+\section{Quality score algorithm}
+We used a modified Newcastle-Ottawa Quality Assessment Scale.
+The scale includes items that assess representativeness of the data sources, 
+sample size at each time point, the method of defining diabetes, 
+whether people with gestational diabetes were excluded, 
+and completeness of the number of data points reported. 
+The maximum score was 8 and total scores were defined as high (7–8), 
+medium (5–6), or low ($\leq$4). 
+A study can be awarded a maximum of one or 
+two points for each numbered item within each category.
+ \\
+ \\
+\noindent \textbf{Selection}
+\begin{enumerate} 
+\item Representativeness of the general population (sampling frame).
+\begin{enumerate} 
+\item National scheme with $\geq$80\% coverage of national population (2 points) 
+\item Random sample from national health insurance (1 point) 
+or national population-based survey with $\geq$80\% response rate (1 point)
+\item Regional representative or national scheme with $<$80\% coverage of national population (0 points)  
+\end{enumerate}
+\item Sample size at each time point.
+\begin{enumerate} 
+\item $>$10,000 (1 point)
+\item $\leq$10,000 (0 points) 
+\end{enumerate}
+\end{enumerate}
+
+\noindent \textbf{Outcome}
+\begin{enumerate} 
+\item Assessment of diabetes status.
+\begin{enumerate} 
+\item By blood glucose measurement (FPG, OGTT, HbA1c) or by multiple approaches
+/administrative algorithm where 2 or more criteria used (2 points) 
+\item Clinical diagnosis (e.g. ICD code or physician-diagnosed) (1 point) 
+\item Anti-diabetic medication or self-report of physician-diagnosed diabetes  (0 points)	
+\end{enumerate}
+\item Exclusion of gestational diabetes
+\begin{enumerate} 
+\item Yes (1 point)
+\item No (0 points)
+\end{enumerate}
+\end{enumerate}
+
+\noindent \textbf{Completeness of trend data}
+\begin{enumerate}
+\item How many time points are provided?
+\begin{enumerate}
+\item $\geq$10 (2 points)
+\item 6–9 (1 point)
+\item $<$6 (0 points)
+\end{enumerate}
+\end{enumerate}
+
+\noindent Thus, the total possible score is 8.
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Diabetes definition by data source}
+    \label{DDef}
+     \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
+      multicolumn names=l,
+      col sep=colon,
+      header=false,
+      string type,
+      display columns/0/.style={column name=Jurisdiction, column type={l}, text indicator="},
+      display columns/1/.style={column name=Diabetes definition, column type={l}},
+      display columns/2/.style={column name=Gestational diabetes excluded, column type={l}},
+      every head row/.style={
+        before row={\toprule
+					},
+        after row={\midrule}
+            },
+        every last row/.style={after row=\bottomrule},
+    ]{Ddef.csv}
+  \end{center}
+ICD=International Classification of Diseases; ICD-10=International Classification of Diseases, 10th edition. 
+\end{table}
+
+
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Quality assessment of the included data sources}
+    \label{DDef}
+     \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
+      multicolumn names=l,
+      col sep=colon,
+      header=true,
+      string type,
+      display columns/0/.style={column name=Country/Region, column type={l}, text indicator="},
+      display columns/1/.style={column name=Origin of data, column type={l}},
+      display columns/2/.style={column name=Representativeness of population, column type={l}},
+      display columns/2/.style={column name=Sample size at time points, column type={l}},
+      display columns/2/.style={column name=Assessment of diabetes, column type={l}},
+      display columns/2/.style={column name=Exclusion of gestational diabetes, column type={l}},
+      display columns/2/.style={column name=Completeness (no. of data points), column type={l}},
+      display columns/2/.style={column name=Total Score, column type={l}},
+      every head row/.style={
+        before row={\toprule
+					},
+        after row={\midrule}
+            },
+        every last row/.style={after row=\bottomrule},
+    ]{QA.csv}
+  \end{center}
+ICD=International Classification of Diseases; ICD-10=International Classification of Diseases, 10th edition. 
+\end{table}
+
+
+
+\color{Blue4}
+***/
+
+
+export delimited using QA.csv, delimiter(":") novarnames replace
+
+
+/***
+\color{black}
+
+\clearpage
+\bibliography{/Users/jed/Documents/Library.bib}
+\end{document}
+***/
+
+texdoc close
+
