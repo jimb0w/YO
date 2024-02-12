@@ -112,7 +112,17 @@ be effective, we will drop all data from 2021 or later.
 
 texdoc stlog, cmdlog nodo
 cd "/Users/jed/Documents/YO"
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+set seed 1312
+import delimited "Consortium young-onset diabetes database v9.csv", varnames(1) clear
+replace inc_uncertaint = runiformint(1,2) if country == "Denmark" & inc_uncertaint==.
+replace inc_t2d = runiformint(1,4) if country == "Scotland" & inc_t2d==.
+replace inc_uncertaint = runiformint(1,3) if country == "Finland" & inc_uncertaint==.
+replace inc_uncertaint = runiformint(1,9) if country == "Hungary" & inc_uncertaint==.
+count if inc_t1d==.
+count if inc_t2d==.
+count if inc_uncertaint==.
+save dbasev9, replace
+use dbasev9, clear
 drop if cal >= 2021
 bysort country (cal sex age) : egen lb = min(cal)
 bysort country (cal sex age) : egen ub = max(cal)
@@ -169,7 +179,7 @@ texdoc stlog close
 ***/
 
 texdoc stlog, cmdlog
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country calendar_yr)
 gen inc1 = 1000*inc_t1d/pys_nondm
@@ -210,7 +220,7 @@ order(1 "Type 1 diabetes" ///
 3 "Uncertain type") ///
 rows(3)) ///
 graphregion(color(white)) ///
-xlabel(1995(5)2020) ///
+xlabel(2000(5)2020) ///
 ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
 yscale(log range(0.05 6)) ///
 ytitle("Incidence (per 1,000 person-years)") ///
@@ -218,7 +228,7 @@ xtitle("Calendar year") ///
 title("`c'", placement(west) color(gs0) size(medium))
 texdoc graph, label(`c'crude) caption(Crude incidence of diabetes in `c' among people aged 15-39 years, by diabetes type)
 }
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar_yr)
 gen inc1 = 1000*inc_t1d/pys_nondm
@@ -262,7 +272,7 @@ order(1 "Type 1 diabetes" ///
 5 "Uncertain type") ///
 rows(3)) ///
 graphregion(color(white)) ///
-xlabel(1995(5)2020) ///
+xlabel(2000(5)2020) ///
 ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
 yscale(log range(0.05 6)) ///
 ytitle("Incidence (per 1,000 person-years)") ///
@@ -323,7 +333,7 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+use dbasev9, clear
 drop if cal >= 2021
 if "`iii'" == "inc_t1d" {
 drop if age_gp == "35-39"
@@ -536,8 +546,8 @@ ylabel(0.002 "0.002" ///
 2.0 "2.0" ///
 5.0 "5.0", format(%9.3f) grid angle(0)) ///
 yscale(range(0.001 5.05) log) ///
-xscale(range(1995 2020)) ///
-xlabel(1995(5)2020, nogrid) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
 ytitle("Incidence (per 1,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`c' - `oc' - `s'", placement(west) color(black) size(medium))
@@ -743,8 +753,8 @@ ylabel(0.002 "0.002" ///
 2.0 "2.0" ///
 5.0 "5.0", format(%9.3f) grid angle(0)) ///
 yscale(range(0.001 5.05) log) ///
-xscale(range(1995 2020)) ///
-xlabel(1995(5)2020, nogrid) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
 ytitle("Incidence (per 1,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`oc' - `s'", placement(west) color(black) size(medium))
@@ -822,7 +832,7 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+use dbasev9, clear
 drop if cal >= 2021
 drop if age_gp == "35-39"
 keep if country == "`c'" & sex == "`ii'"
@@ -860,6 +870,13 @@ centile calendar, centile(25 75)
 local CK1 = r(c_1)
 local CK2 = r(c_2)
 mkspline timesp = calendar, cubic knots(`CK1' `CK2')
+preserve
+clear
+set obs 1
+gen calendar=2017-2009.5
+mkspline timesp = calendar, cubic knots(`CK1' `CK2')
+local T1=timesp1[1]
+restore
 }
 else if inrange(`rang',8,11.9) {
 centile calendar, centile(10 50 90)
@@ -867,6 +884,14 @@ local CK1 = r(c_1)
 local CK2 = r(c_2)
 local CK3 = r(c_3)
 mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3')
+preserve
+clear
+set obs 1
+gen calendar=2017-2009.5
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3')
+local T1=timesp1[1]
+local T2=timesp2[1]
+restore
 }
 else if inrange(`rang',12,15.9) {
 centile calendar, centile(5 35 65 95)
@@ -875,6 +900,15 @@ local CK2 = r(c_2)
 local CK3 = r(c_3)
 local CK4 = r(c_4)
 mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4')
+preserve
+clear
+set obs 1
+gen calendar=2017-2009.5
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4')
+local T1=timesp1[1]
+local T2=timesp2[1]
+local T3=timesp3[1]
+restore
 }
 else {
 centile calendar, centile(5 27.5 50 72.5 95)
@@ -884,12 +918,42 @@ local CK3 = r(c_3)
 local CK4 = r(c_4)
 local CK5 = r(c_5)
 mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
+preserve
+clear
+set obs 1
+gen calendar=2017-2009.5
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
+local T1=timesp1[1]
+local T2=timesp2[1]
+local T3=timesp3[1]
+local T4=timesp4[1]
+restore
 }
-poisson inc i.DT##c.agesp* timesp*, exposure(pys)
+poisson inc i.DT##c.agesp*##c.timesp*, exposure(pys)
 matrix A = (.,.,.)
+if `rang' < 8 {
 forval a = 1/20 {
-margins, dydx(DT) at(agesp1==`A1`a'' agesp2==`A2`a'' agesp3==`A3`a'') predict(xb)
+margins, dydx(DT) at(agesp1==`A1`a'' agesp2==`A2`a'' agesp3==`A3`a'' timesp1==`T1') predict(xb)
 matrix A = (A\r(table)[1,2],r(table)[5,2],r(table)[6,2])
+}
+}
+else if inrange(`rang',8,11.9) {
+forval a = 1/20 {
+margins, dydx(DT) at(agesp1==`A1`a'' agesp2==`A2`a'' agesp3==`A3`a'' timesp1==`T1' timesp2==`T2') predict(xb)
+matrix A = (A\r(table)[1,2],r(table)[5,2],r(table)[6,2])
+}
+}
+else if inrange(`rang',12,15.9) {
+forval a = 1/20 {
+margins, dydx(DT) at(agesp1==`A1`a'' agesp2==`A2`a'' agesp3==`A3`a'' timesp1==`T1' timesp2==`T2' timesp3==`T3') predict(xb)
+matrix A = (A\r(table)[1,2],r(table)[5,2],r(table)[6,2])
+}
+}
+else {
+forval a = 1/20 {
+margins, dydx(DT) at(agesp1==`A1`a'' agesp2==`A2`a'' agesp3==`A3`a'' timesp1==`T1' timesp2==`T2' timesp3==`T3' timesp4==`T4') predict(xb)
+matrix A = (A\r(table)[1,2],r(table)[5,2],r(table)[6,2])
+}
 }
 clear
 set obs 21
@@ -963,7 +1027,7 @@ ylabel( ///
 1.0 "1.0" ///
 2.0 "2.0" ///
 5.0 "5.0" 10 "10.0" 20 "20.0", grid angle(0)) ///
-yscale(range(0.02 20) log) ///
+yscale(range(0.02 30) log) ///
 xlabel(15(5)35, nogrid) ///
 ytitle("Incidence rate ratio", margin(a+2)) ///
 xtitle("Age") yline(1, lcol(black)) ///
@@ -997,7 +1061,7 @@ to 1-year age groups (using linear regression).
 ***/
 
 texdoc stlog, cmdlog
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+use dbasev9, clear
 drop if cal >= 2021
 keep if _n<=5
 keep age_gp esp2010
@@ -1043,7 +1107,7 @@ texdoc graph, label(ESP2010P) caption(European standard population proportions i
 keep age B
 replace age = age-0.5
 save refpop, replace
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+use dbasev9, clear
 drop if cal >= 2021
 keep if _n<=5
 keep age_gp esp2010
@@ -1113,7 +1177,7 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+use dbasev9, clear
 drop if cal >= 2021
 if "`iii'" == "inc_t1d" {
 drop if age_gp == "35-39"
@@ -1291,8 +1355,8 @@ ylabel(0.005 "0.005" ///
 2.0 "2.0" ///
 5.0 "5.0", format(%9.3f) grid angle(0)) ///
 yscale(range(0.004 5.05) log) ///
-xscale(range(1995 2020)) ///
-xlabel(1995(5)2020, nogrid) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
 ytitle("Incidence (per 1,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`oc' - `s'", placement(west) color(black) size(medium))
@@ -1326,8 +1390,8 @@ ylabel(0.005 "0.005" ///
 2.0 "2.0" ///
 5.0 "5.0", format(%9.3f) grid angle(0)) ///
 yscale(range(0.004 5.05) log) ///
-xscale(range(1995 2020)) ///
-xlabel(1995(5)2020, nogrid) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
 ytitle("Incidence (per 1,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`oc' - `s'", placement(west) color(black) size(medium))
@@ -1410,8 +1474,8 @@ ylabel(0.005 "0.005" ///
 2.0 "2.0" ///
 5.0 "5.0", format(%9.3f) grid angle(0)) ///
 yscale(range(0.004 5.05) log) ///
-xscale(range(1995 2020)) ///
-xlabel(1995(5)2020, nogrid) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
 ytitle("Incidence (per 1,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`oc' - `s'", placement(west) color(black) size(medium))
@@ -1447,8 +1511,8 @@ ylabel(0.005 "0.005" ///
 2.0 "2.0" ///
 5.0 "5.0", format(%9.3f) grid angle(0)) ///
 yscale(range(0.004 5.05) log) ///
-xscale(range(1995 2020)) ///
-xlabel(1995(5)2020, nogrid) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
 ytitle("Incidence (per 1,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`oc' - `s'", placement(west) color(black) size(medium))
@@ -1514,7 +1578,7 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+use dbasev9, clear
 drop if cal >= 2021
 if `iii' == 1 {
 drop if age_gp == "35-39"
@@ -1659,7 +1723,7 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+use dbasev9, clear
 drop if cal >= 2021
 if "`iii'" == "inc_t1d" {
 drop if age_gp == "35-39"
@@ -2059,7 +2123,7 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
 ***/
 
 texdoc stlog, nolog
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country calendar_yr)
 gen inc1 = 1000*inc_t1d/pys_nondm
@@ -2100,7 +2164,7 @@ order(1 "Type 1 diabetes" ///
 3 "Uncertain type") ///
 rows(3)) ///
 graphregion(color(white)) ///
-xlabel(1995(5)2020) ///
+xlabel(2000(5)2020) ///
 ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
 yscale(log range(0.05 6)) ///
 ytitle("Incidence (per 1,000 person-years)") ///
@@ -2108,7 +2172,7 @@ xtitle("Calendar year") ///
 title("`c'", placement(west) color(gs0) size(medium))
 texdoc graph, label(`c'crude) caption(Crude incidence of diabetes in `c' among people aged 15-39 years, by diabetes type)
 }
-import delimited "Consortium young-onset diabetes_incidence v7.csv", varnames(1) clear
+use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar_yr)
 gen inc1 = 1000*inc_t1d/pys_nondm
@@ -2152,7 +2216,7 @@ order(1 "Type 1 diabetes" ///
 5 "Uncertain type") ///
 rows(3)) ///
 graphregion(color(white)) ///
-xlabel(1995(5)2020) ///
+xlabel(2000(5)2020) ///
 ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
 yscale(log range(0.05 6)) ///
 ytitle("Incidence (per 1,000 person-years)") ///
