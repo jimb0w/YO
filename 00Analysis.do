@@ -21,6 +21,7 @@ set linesize 100
 
 \usepackage{multirow}
 \usepackage{booktabs}
+\renewcommand{\bibsection}{}
 
 \newcommand{\specialcell}[2][c]{%
   \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
@@ -68,7 +69,7 @@ Baker Heart and Diabetes Institute, Melbourne, Australia \\
 \noindent
 Bendix Carstensen \\
 Senior Statistician \\
-Steno Diabetes Center Copenhagen, Gentofte, Denmark \\
+Steno Diabetes Center Copenhagen, Herlev, Denmark \\
 Department of Biostatistics, University of Copenhagen \\
 \\
 \noindent
@@ -161,8 +162,8 @@ texdoc stlog close
 \pgfkeyssetvalue{/pgfplots/table/@cell content}
 {\multirow{2}{*}{##1}}}},
       display columns/2/.style={column name=Sex, column type={l}, text indicator="},
-      display columns/3/.style={column name=Type 1 diabetes, column type={r}},
-      display columns/4/.style={column name=Type 2 diabetes, column type={r}},
+      display columns/3/.style={column name=Typical type 1 diabetes, column type={r}},
+      display columns/4/.style={column name=Typical type 2 diabetes, column type={r}},
       display columns/5/.style={column name=Uncertain diabetes type, column type={r}},
       display columns/6/.style={column name=\specialcell{Person-years in people \\ without diabetes}, column type={r}},
       every head row/.style={
@@ -186,12 +187,9 @@ collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country calendar_yr)
 gen inc1 = 1000*inc_t1d/pys_nondm
 gen inc2 = 1000*inc_t2d/pys_nondm
 gen inc3 = 1000*inc_unc/pys_nondm
-forval i = 1/8 {
+foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
-}
-if `i' == 2 {
-local c = "Catalonia, Spain"
 }
 if `i' == 3 {
 local c = "Denmark"
@@ -211,13 +209,18 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
+local co = "`c'"
+if `i' == 2 {
+local c = "Catalonia, Spain"
+local co = "Spain (Catalonia)"
+}
 twoway ///
 (line inc1 calendar if country == "`c'", color(dknavy)) ///
 (line inc2 calendar if country == "`c'", color(cranberry)) ///
 (line inc3 calendar if country == "`c'", color(magenta)) ///
 , legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
-order(1 "Type 1 diabetes" ///
-2 "Type 2 diabetes" ///
+order(1 "Typical type 1 diabetes" ///
+2 "Typical type 2 diabetes" ///
 3 "Uncertain type") ///
 rows(3)) ///
 graphregion(color(white)) ///
@@ -226,8 +229,8 @@ ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
 yscale(log range(0.05 6)) ///
 ytitle("Incidence rate (per 1,000 person-years)") ///
 xtitle("Calendar year") ///
-title("`c'", placement(west) color(gs0) size(medium))
-texdoc graph, label(`c'crude) caption(Crude incidence rates of diabetes in `c' among people aged 15-39 years, by diabetes type)
+title("`co'", placement(west) color(gs0) size(medium))
+texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type)
 }
 use dbasev9, clear
 drop if cal >= 2021
@@ -235,12 +238,9 @@ collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar
 gen inc1 = 1000*inc_t1d/pys_nondm
 gen inc2 = 1000*inc_t2d/pys_nondm
 gen inc3 = 1000*inc_unc/pys_nondm
-forval i = 1/8 {
+foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
-}
-if `i' == 2 {
-local c = "Catalonia, Spain"
 }
 if `i' == 3 {
 local c = "Denmark"
@@ -259,6 +259,11 @@ local c = "Scotland"
 }
 if `i' == 8 {
 local c = "South Korea"
+}
+local co = "`c'"
+if `i' == 2 {
+local c = "Catalonia, Spain"
+local co = "Spain (Catalonia)"
 }
 twoway ///
 (line inc1 calendar if country == "`c'" & sex == "F", color(dknavy)) ///
@@ -268,8 +273,8 @@ twoway ///
 (line inc3 calendar if country == "`c'" & sex == "F", color(magenta)) ///
 (line inc3 calendar if country == "`c'" & sex == "M", color(magenta) lpattern(shortdash)) ///
 , legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
-order(1 "Type 1 diabetes" ///
-3 "Type 2 diabetes" ///
+order(1 "Typical type 1 diabetes" ///
+3 "Typical type 2 diabetes" ///
 5 "Uncertain type") ///
 rows(3)) ///
 graphregion(color(white)) ///
@@ -278,8 +283,8 @@ ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
 yscale(log range(0.05 6)) ///
 ytitle("Incidence rate (per 1,000 person-years)") ///
 xtitle("Calendar year") ///
-title("`c'", placement(west) color(gs0) size(medium))
-texdoc graph, label(`c'crude) caption(Crude incidence rates of diabetes in `c' among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.)
+title("`co'", placement(west) color(gs0) size(medium))
+texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.)
 }
 texdoc stlog close
 
@@ -432,14 +437,11 @@ save APC_Rate_`i'_`ii'_`iii', replace
 }
 }
 }
-forval i = 1/8 {
+foreach i in 1 3 4 5 6 7 8 2 {
 foreach ii in M F {
 foreach iii in inc_t1d inc_t2d inc_uncertaint {
 if `i' == 1 {
 local c = "Australia"
-}
-if `i' == 2 {
-local c = "Catalonia, Spain"
 }
 if `i' == 3 {
 local c = "Denmark"
@@ -458,6 +460,11 @@ local c = "Scotland"
 }
 if `i' == 8 {
 local c = "South Korea"
+}
+local co = "`c'"
+if `i' == 2 {
+local c = "Catalonia, Spain"
+local co = "Spain (Catalonia)"
 }
 if "`ii'" == "M" {
 local s = "Males"
@@ -478,10 +485,10 @@ local col4 = var6[3]
 local col5 = var6[2]
 }
 if "`iii'" == "inc_t1d" {
-local oc = "Type 1 diabetes"
+local oc = "Typical type 1 diabetes"
 }
 else if "`iii'" == "inc_t2d" {
-local oc = "Type 2 diabetes"
+local oc = "Typical type 2 diabetes"
 }
 else {
 local oc = "Uncertain diabetes type"
@@ -495,7 +502,7 @@ graphregion(color(white)) ///
 ylabel(, format(%9.0f) grid angle(0)) ///
 ytitle("Pearson residuals", margin(a+2)) ///
 xtitle("Age (years)") ///
-title("`c' - `oc' - `s'", placement(west) color(black) size(medium))
+title("`co' - `oc' - `s'", placement(west) color(black) size(medium))
 graph save CRJ_1_`i'_`ii'_`iii', replace
 twoway ///
 (scatter res cal, col(black)) ///
@@ -504,7 +511,7 @@ graphregion(color(white)) ///
 ylabel(, format(%9.0f) grid angle(0)) ///
 ytitle("Pearson residuals", margin(a+2)) ///
 xtitle("Calendar time (years)") ///
-title("`c' - `oc' - `s'", placement(west) color(black) size(medium))
+title("`co' - `oc' - `s'", placement(west) color(black) size(medium))
 graph save CRJ_2_`i'_`ii'_`iii', replace
 twoway ///
 (scatter res coh, col(black)) ///
@@ -513,7 +520,7 @@ graphregion(color(white)) ///
 ylabel(, format(%9.0f) grid angle(0)) ///
 ytitle("Pearson residuals", margin(a+2)) ///
 xtitle("Cohort (years)") ///
-title("`c' - `oc' - `s'", placement(west) color(black) size(medium))
+title("`co' - `oc' - `s'", placement(west) color(black) size(medium))
 graph save CRJ_3_`i'_`ii'_`iii', replace
 use APC_Rate_`i'_`ii'_`iii', clear
 twoway ///
@@ -551,7 +558,7 @@ xscale(range(2000 2020)) ///
 xlabel(2000(5)2020, nogrid) ///
 ytitle("Incidence rate (per 1,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
-title("`c' - `oc' - `s'", placement(west) color(black) size(medium))
+title("`co' - `oc' - `s'", placement(west) color(black) size(medium))
 graph save "Graph" Escape_`i'_`ii'_`iii', replace
 egen calmin = min(calendar)
 egen calmen = mean(calendar)
@@ -591,19 +598,16 @@ xscale(range(15 40)) ///
 xlabel(15(5)40, nogrid) ///
 ytitle("Incidence rate (per 1,000 person-years)", margin(a+2)) ///
 xtitle("Age (years)") ///
-title("`c' - `oc' - `s'", placement(west) color(black) size(medium))
+title("`co' - `oc' - `s'", placement(west) color(black) size(medium))
 graph save "Graph" TTFATF_`i'_`ii'_`iii', replace
 }
 }
 }
 texdoc stlog close
 texdoc stlog, cmdlog
-forval i = 1/8 {
+foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
-}
-if `i' == 2 {
-local c = "Catalonia, Spain"
 }
 if `i' == 3 {
 local c = "Denmark"
@@ -622,6 +626,11 @@ local c = "Scotland"
 }
 if `i' == 8 {
 local c = "South Korea"
+}
+local co = "`c'"
+if `i' == 2 {
+local c = "Catalonia, Spain"
+local co = "Spain (Catalonia)"
 }
 graph combine ///
 CRJ_1_`i'_F_inc_t1d.gph ///
@@ -643,7 +652,7 @@ CRJ_1_`i'_M_inc_uncertaint.gph ///
 CRJ_2_`i'_M_inc_uncertaint.gph ///
 CRJ_3_`i'_M_inc_uncertaint.gph ///
 , altshrink cols(3) xsize(3.5) graphregion(color(white))
-texdoc graph, label(`c' agespec) caption(Pearson residuals for the age-period-cohort model in `c', by diabetes type and sex)
+texdoc graph, label(`c' agespec) figure(h!) caption(Pearson residuals for the age-period-cohort model in `co', by diabetes type and sex)
 graph combine ///
 Escape_`i'_F_inc_t1d.gph ///
 Escape_`i'_M_inc_t1d.gph ///
@@ -652,7 +661,7 @@ Escape_`i'_M_inc_t2d.gph ///
 Escape_`i'_F_inc_uncertaint.gph ///
 Escape_`i'_M_inc_uncertaint.gph ///
 , altshrink rows(3) xsize(3.5) graphregion(color(white))
-texdoc graph, label(`c' agespec) caption(Incidence rates of diabetes in `c' for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex)
+texdoc graph, label(`c' agespec) figure(h!) caption(Incidence rates of diabetes in `co' for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex)
 graph combine ///
 TTFATF_`i'_F_inc_t1d.gph ///
 TTFATF_`i'_M_inc_t1d.gph ///
@@ -661,7 +670,7 @@ TTFATF_`i'_M_inc_t2d.gph ///
 TTFATF_`i'_F_inc_uncertaint.gph ///
 TTFATF_`i'_M_inc_uncertaint.gph ///
 , altshrink rows(3) xsize(3.5) graphregion(color(white))
-texdoc graph, label(`c' agespec) caption(Incidence rates of diabetes in `c' by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex)
+texdoc graph, label(`c' agespec) figure(h!) caption(Incidence rates of diabetes in `co' by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex)
 }
 texdoc stlog close
 
@@ -687,10 +696,10 @@ else {
 local s = "Females"
 }
 if "`iii'" == "inc_t1d" {
-local oc = "Type 1 diabetes"
+local oc = "Typical type 1 diabetes"
 }
 else if "`iii'" == "inc_t2d" {
-local oc = "Type 2 diabetes"
+local oc = "Typical type 2 diabetes"
 }
 else {
 local oc = "Uncertain diabetes type"
@@ -707,6 +716,7 @@ clear
 forval i = 1/8 {
 append using APC_Rate_`i'_`ii'_`iii'
 }
+replace country = "Spain (Catalonia)" if country == "Catalonia, Spain"
 keep if age == `age'
 preserve
 bysort country : keep if _n == 1
@@ -773,7 +783,7 @@ Alive_M_inc_t2d_20.gph ///
 Alive_F_inc_uncertaint_20.gph ///
 Alive_M_inc_uncertaint_20.gph ///
 , altshrink rows(3) xsize(4) graphregion(color(white))
-texdoc graph, label(agespec20) caption(Incidence rates of diabetes for people aged 20 years, by diabetes type and sex)
+texdoc graph, label(agespec20) figure(h!) caption(Incidence rates of diabetes for people aged 20 years, by diabetes type and sex)
 graph combine ///
 Alive_F_inc_t1d_25.gph ///
 Alive_M_inc_t1d_25.gph ///
@@ -782,7 +792,7 @@ Alive_M_inc_t2d_25.gph ///
 Alive_F_inc_uncertaint_25.gph ///
 Alive_M_inc_uncertaint_25.gph ///
 , altshrink rows(3) xsize(4) graphregion(color(white))
-texdoc graph, label(agespec25) caption(Incidence rates of diabetes for people aged 25 years, by diabetes type and sex)
+texdoc graph, label(agespec25) figure(h!) caption(Incidence rates of diabetes for people aged 25 years, by diabetes type and sex)
 graph combine ///
 Alive_F_inc_t1d_30.gph ///
 Alive_M_inc_t1d_30.gph ///
@@ -791,7 +801,7 @@ Alive_M_inc_t2d_30.gph ///
 Alive_F_inc_uncertaint_30.gph ///
 Alive_M_inc_uncertaint_30.gph ///
 , altshrink rows(3) xsize(4) graphregion(color(white))
-texdoc graph, label(agespec30) caption(Incidence rates of diabetes for people aged 30 years, by diabetes type and sex)
+texdoc graph, label(agespec30) figure(h!) caption(Incidence rates of diabetes for people aged 30 years, by diabetes type and sex)
 texdoc stlog close
 
 /***
@@ -982,12 +992,12 @@ local col3 = "255 0 255"
 local col4 = "255 0 0"
 local col5 = "255 125 0"
 local col6 = "0 125 0"
-local col7 = "0 175 255"
-local col8 = "0 0 0"
+local col7 = "0 0 0"
 clear
 forval i = 1/7 {
 append using SMR_`i'_`ii'
 }
+replace country = "Spain (Catalonia)" if country == "Catalonia, Spain"
 preserve
 bysort country : keep if _n == 1
 forval i = 1/7 {
@@ -1041,7 +1051,7 @@ graph combine ///
 Possession_F.gph ///
 Possession_M.gph ///
 , altshrink rows(1) xsize(10) graphregion(color(white))
-texdoc graph, label(smr111) caption(Incidence rate ratio for type 2 vs. type 1 diabetes, ///
+texdoc graph, label(smr111) figure(h!) caption(Incidence rate ratio for typical type 2 vs. typical type 1 diabetes, ///
 by sex in 2017. South Korea is excluded due to insufficient numbers in type 1 diabetes.)
 graph export "/Users/jed/Documents/YO/Figure 3.pdf", as(pdf) name("Graph") replace
 texdoc stlog close
@@ -1088,7 +1098,7 @@ cols(1)) ///
 graphregion(color(white)) ///
 ylabel(1.2(0.1)1.5, format(%9.1f) angle(0)) ///
 ytitle("Population size (millions)") xtitle("Age")
-texdoc graph, label(ESP2010N) caption(European standard population in 2010)
+texdoc graph, label(ESP2010N) figure(h!) caption(European standard population in 2010)
 restore
 su(esp2010)
 gen esp2010prop = esp2010/r(sum)
@@ -1104,7 +1114,7 @@ cols(1)) ///
 ylabel(0(0.01)0.04, angle(0) format(%9.2f)) ///
 graphregion(color(white)) ///
 ytitle("Proportion") xtitle("Age")
-texdoc graph, label(ESP2010P) caption(European standard population proportions in 2010)
+texdoc graph, label(ESP2010P) figure(h!) caption(European standard population proportions in 2010)
 keep age B
 replace age = age-0.5
 save refpop, replace
@@ -1293,10 +1303,10 @@ else {
 local s = "Females"
 }
 if "`iii'" == "inc_t1d" {
-local oc = "Type 1 diabetes"
+local oc = "Typical type 1 diabetes"
 }
 else if "`iii'" == "inc_t2d" {
-local oc = "Type 2 diabetes"
+local oc = "Typical type 2 diabetes"
 }
 else {
 local oc = "Uncertain diabetes type"
@@ -1307,12 +1317,12 @@ local col3 = "255 0 255"
 local col4 = "255 0 0"
 local col5 = "255 125 0"
 local col6 = "0 125 0"
-local col7 = "0 175 255"
-local col8 = "0 0 0"
+local col7 = "0 0 0"
 clear
 forval i = 1/7 {
 append using STD_Rate_`i'_`ii'_`iii'
 }
+replace country = "Spain (Catalonia)" if country == "Catalonia, Spain"
 preserve
 bysort country : keep if _n == 1
 forval i = 1/7 {
@@ -1409,10 +1419,10 @@ else {
 local s = "Females"
 }
 if "`iii'" == "inc_t1d" {
-local oc = "Type 1 diabetes"
+local oc = "Typical type 1 diabetes"
 }
 else if "`iii'" == "inc_t2d" {
-local oc = "Type 2 diabetes"
+local oc = "Typical type 2 diabetes"
 }
 else {
 local oc = "Uncertain diabetes type"
@@ -1429,6 +1439,7 @@ clear
 forval i = 1/8 {
 append using STD_Rate_`i'_`ii'_`iii'
 }
+replace country = "Spain (Catalonia)" if country == "Catalonia, Spain"
 preserve
 bysort country : keep if _n == 1
 forval i = 1/8 {
@@ -1531,7 +1542,7 @@ Alive_M_inc_t2d_STD.gph ///
 Alive_F_inc_uncertaint_STD.gph ///
 Alive_M_inc_uncertaint_STD.gph ///
 , altshrink rows(3) xsize(3.3) graphregion(color(white))
-texdoc graph, label(STDfig) caption(Age-standardized incidence rates of diabetes for people aged 15-39 years, by diabetes type and sex. ///
+texdoc graph, label(STDfig) figure(h!) caption(Age-standardized incidence rates of diabetes for people aged 15-39 years, by diabetes type and sex. ///
 South Korea is excluded from type 1 diabetes due to insufficent numbers.)
 graph export "/Users/jed/Documents/YO/Figure 1.pdf", as(pdf) name("Graph") replace
 texdoc stlog close
@@ -1542,7 +1553,7 @@ texdoc stlog close
 \clearpage
 \section{Average Annual Percent Changes}
 
-As a summary metric, we will also estimate the average annual percent change
+As a summary metric, we will also estimate the average annual change
 in incidence - overall, and by sex. For this, we use a different model with a spline effect
 of age, but only a (log-)linear effect of calendar time. This means we are assuming the effect of time
 is constant throughout follow-up, which we already know is false for a few countries (e.g., Australia;
@@ -1554,7 +1565,7 @@ figure~\ref{agespec25}). \\
 texdoc stlog, cmdlog nodo
 forval i = 1/8 {
 forval ii = 0/2 {
-forval iii = 1/3 {
+forval iii = 1/4 {
 if `i' == 1 {
 local c = "Australia"
 }
@@ -1615,19 +1626,23 @@ poisson inc_t2d calendar agesp*, exposure(pys)
 if `iii' == 3 {
 poisson inc_uncertaint calendar agesp*, exposure(pys)
 }
+if `iii' == 4 {
+gen totinc = inc_t1d+inc_t2d+inc_uncertaint
+poisson totinc calendar agesp*, exposure(pys)
+}
 matrix A_`i'_`ii'_`iii' = (`lb',`ub',`i',`ii',`iii',r(table)[1,1], r(table)[5,1], r(table)[6,1])
 }
 }
-matrix A_`i' = (A_`i'_0_1,A_`i'_0_2,A_`i'_0_3\ ///
-A_`i'_1_1,A_`i'_1_2,A_`i'_1_3\ ///
-A_`i'_2_1,A_`i'_2_2,A_`i'_2_3)
+matrix A_`i' = (A_`i'_0_1,A_`i'_0_2,A_`i'_0_3,A_`i'_0_4\ ///
+A_`i'_1_1,A_`i'_1_2,A_`i'_1_3,A_`i'_1_4\ ///
+A_`i'_2_1,A_`i'_2_2,A_`i'_2_3,A_`i'_2_4)
 }
 matrix A = (A_1\A_2\A_3\A_4\A_5\A_6\A_7\A_8)
 clear
 svmat A
 gen country=""
 bysort A3 (A2) : replace country = "Australia" if A3 == 1 & _n == 1
-bysort A3 (A2) : replace country = "Catalonia, Spain" if A3 == 2 & _n == 1
+bysort A3 (A2) : replace country = "Spain (Catalonia)" if A3 == 2 & _n == 1
 bysort A3 (A2) : replace country = "Denmark" if A3 == 3 & _n == 1
 bysort A3 (A2) : replace country = "Finland" if A3 == 4 & _n == 1
 bysort A3 (A2) : replace country = "Hungary" if A3 == 5 & _n == 1
@@ -1639,15 +1654,20 @@ bysort A3 (A2) : gen time = A1+"-"+A2 if _n == 1
 gen sex = "Overall" if A4 == 0
 replace sex = "Males" if A4 == 1
 replace sex = "Females" if A4 == 2
-drop A9-A13 A17-A21
-foreach var of varlist A6-A24 {
+drop A9-A13 A17-A21 A25-A29
+foreach var of varlist A6-A32 {
 replace `var' = 100*(exp(`var')-1)
 }
-tostring A6-A24, replace force format(%9.1f)
+tostring A6-A32, replace force format(%9.1f)
 gen T1 = "$" + A6 + "$ ($" + A7 + "$, $" + A8 + "$)"
 gen T2 = "$" + A14 + "$ ($" + A15 + "$, $" + A16 + "$)"
 gen T3 = "$" + A22 + "$ ($" + A23 + "$, $" + A24 + "$)"
-keep country time sex T1 T2 T3
+gen T4 = "$" + A30 + "$ ($" + A31 + "$, $" + A32 + "$)"
+gen njm = _n
+gen nj =0
+replace nj = 1 if _n == 4 | _n == 5 | _n == 6
+sort nj njm
+keep country time sex T1 T2 T3 T4
 export delimited using APCs.csv, delimiter(":") novarnames replace
 texdoc stlog close
 
@@ -1656,7 +1676,7 @@ texdoc stlog close
 
 \begin{table}[h!]
   \begin{center}
-    \caption{Average annual percent change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.}
+    \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.}
     \label{APCs}
      \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
       multicolumn names,
@@ -1672,9 +1692,10 @@ texdoc stlog close
 \pgfkeyssetvalue{/pgfplots/table/@cell content}
 {\multirow{3}{*}{##1}}}},
       display columns/2/.style={column name=Sex, column type={l}, text indicator="},
-      display columns/3/.style={column name=Type 1 diabetes, column type={r}, column type/.add={|}{}},
-      display columns/4/.style={column name=Type 2 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/3/.style={column name=Typical type 1 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/4/.style={column name=Typical type 2 diabetes, column type={r}, column type/.add={|}{}},
       display columns/5/.style={column name=Uncertain diabetes type, column type={r}, column type/.add={|}{|}},
+      display columns/6/.style={column name=Total diabetes, column type={r}, column type/.add={}{|}},
       every head row/.style={
         before row={\toprule
 					},
@@ -1800,13 +1821,10 @@ save APC_age_`i'_`ii'_`iii'_2, replace
 }
 texdoc stlog close
 texdoc stlog, cmdlog
-forval i = 1/8 {
+foreach i in 1 3 4 5 6 7 8 2 {
 foreach iii in inc_t1d inc_t2d inc_uncertaint {
 if `i' == 1 {
 local c = "Australia"
-}
-if `i' == 2 {
-local c = "Catalonia, Spain"
 }
 if `i' == 3 {
 local c = "Denmark"
@@ -1826,11 +1844,16 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
+local co = "`c'"
+if `i' == 2 {
+local c = "Catalonia, Spain"
+local co = "Spain (Catalonia)"
+}
 if "`iii'" == "inc_t1d" {
-local oc = "Type 1 diabetes"
+local oc = "Typical type 1 diabetes"
 }
 else if "`iii'" == "inc_t2d" {
-local oc = "Type 2 diabetes"
+local oc = "Typical type 2 diabetes"
 }
 else {
 local oc = "Uncertain diabetes type"
@@ -1858,7 +1881,7 @@ yline(0, lcolor(gs0)) ///
 ylabel(-5(5)15, angle(0)) ///
 xtitle("Attained age (years)") ///
 xlabel(15(5)40) ///
-title("`c' - `oc'", placement(west) size(medium) color(gs0))
+title("`co' - `oc'", placement(west) size(medium) color(gs0))
 graph save "Graph" Apage_`i'_`iii'_`a', replace
 }
 }
@@ -1870,7 +1893,7 @@ Apage_`i'_inc_t2d_2.gph ///
 Apage_`i'_inc_uncertaint_1.gph ///
 Apage_`i'_inc_uncertaint_2.gph ///
 , altshrink rows(3) xsize(3.5) graphregion(color(white))
-texdoc graph, label(`c' apcageg) caption(Annual percent change in the incidence rates of diabetes in `c' by age, by diabetes type and sex. ///
+texdoc graph, label(`c' apcageg) figure(h!) caption(Annual change in the incidence rates of diabetes in `co' by age, by diabetes type and sex. ///
 Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction ///
 between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of ///
 age and calendar time in the interaction.)
@@ -1880,13 +1903,22 @@ texdoc stlog close
 /***
 \color{black}
 
+
 \clearpage
+\section*{References}
+\addcontentsline{toc}{section}{References}
 \bibliography{/Users/jed/Documents/Library.bib}
 \end{document}
 ***/
 
 texdoc close
 
+*import delimited using QA.csv, delimiter(":") clear 
+*label variable ass "Definition of diabetes"
+*Other changes
+*export excel myfile,  firstrow(varlabels) replace
+*import excel myfile.xls, clear
+*export delimited QA2, novarnames delimiter(":") replace
 
 
 texdoc init YO_SA, replace logdir(logsa) gropts(optargs(width=0.8\textwidth))
@@ -1923,12 +1955,11 @@ set linesize 100
 \begin{titlepage}
     \begin{flushright}
         \Huge
-        \textbf{Trends in incidence of young-onset diabetes by type: 
+        \textbf{Trends in incidence of young-onset diabetes by diabetes type: 
 a multi-national population-based study \\
 Appendix}
 \rule{16cm}{2mm} \\
 \Large
-\thedate \\
        \vfill
     \end{flushright}
         \Large
@@ -1952,7 +1983,7 @@ Baker Heart and Diabetes Institute, Melbourne, Australia \\
 \noindent
 Bendix Carstensen \\
 Senior Statistician \\
-Steno Diabetes Center Copenhagen, Gentofte, Denmark \\
+Steno Diabetes Center Copenhagen, Herlev, Denmark \\
 Department of Biostatistics, University of Copenhagen \\
 \\
 \noindent
@@ -1980,7 +2011,7 @@ The scale includes items that assess representativeness of the data sources,
 sample size at each time point, the method of defining diabetes, 
 whether people with gestational diabetes were excluded, 
 and completeness of the number of data points reported. 
-The maximum score was 8 and total scores were defined as high (7–8), 
+The maximum score was 8. Risk of bias was classified as high (7–8), 
 medium (5–6), or low ($\leq$4). 
 A study can be awarded a maximum of one or 
 two points for each numbered item within each category.
@@ -2004,7 +2035,7 @@ or national population-based survey with $\geq$80\% response rate (1 point)
 
 \noindent \textbf{Outcome}
 \begin{enumerate} 
-\item Assessment of diabetes status.
+\item Definition of diabetes.
 \begin{enumerate} 
 \item By blood glucose measurement (FPG, OGTT, HbA1c) or by multiple approaches
 /administrative algorithm where 2 or more criteria used (2 points) 
@@ -2061,7 +2092,7 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
 \begin{table}[h!]
   \begin{center}
     \caption{Quality assessment of the included data sources}
-    \label{DDef}
+    \label{QA}
      \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
       multicolumn names=l,
       col sep=colon,
@@ -2081,15 +2112,85 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
         every last row/.style={after row=\bottomrule},
 		every row no 1/.style={before row=\hline},
 		every row no 2/.style={before row=\hline},
-    ]{QA.csv}
+    ]{QA2.csv}
   \end{center}
 \end{table}
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Crude incidence rate of diagnosed diabetes for people aged 15-39 years, by jurisdiction}
+    \hspace*{-1.5cm}
+    \label{cleansumtab}
+     \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
+      multicolumn names,
+      col sep=colon,
+      header=false,
+      string type,
+	  display columns/0/.style={column name=Country,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+	  display columns/1/.style={column name=Period,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+      display columns/2/.style={column name=Sex, column type={l}, text indicator="},
+      display columns/3/.style={column name=\specialcell{Person-years \\ of follow-up}, column type={r}},
+      display columns/4/.style={column name=Incident cases, column type={r}},
+      display columns/5/.style={column name=\specialcell{{Crude incidence} \\ {(per 1,000 person-years)}}, column type={r}},
+      display columns/6/.style={column name=Incident cases, column type={r}},
+      display columns/7/.style={column name=\specialcell{{Crude incidence} \\ {(per 1,000 person-years)}}, column type={r}},
+      display columns/8/.style={column name=Incident cases, column type={r}},
+      display columns/9/.style={column name=\specialcell{{Crude incidence} \\ {(per 1,000 person-years)}}, column type={r}},
+      every head row/.style={
+        before row={\toprule
+					& & & & \multicolumn{2}{c}{Typical type 1 diabetes} & \multicolumn{2}{c}{Typical type 2 diabetes} & \multicolumn{2}{c}{Uncertain diabetes type} \\
+					},
+        after row={\midrule}
+            },
+        every nth row={3}{before row=\midrule},
+        every last row/.style={after row=\bottomrule},
+    ]{CI.csv}
+  \end{center}
+\end{table}
+
 \end{landscape}
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Age distribution of people with incident diabetes and people without diabetes, by jurisdiction}
+    \label{cleansumtab}
+     \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
+      multicolumn names,
+      col sep=colon,
+      header=false,
+      string type,
+      display columns/0/.style={column name=, column type={l}, text indicator="},
+      display columns/1/.style={column name=\specialcell{15-19 \\ years}, column type={r}},
+      display columns/2/.style={column name=\specialcell{20-24 \\ years}, column type={r}},
+      display columns/3/.style={column name=\specialcell{25-29 \\ years}, column type={r}},
+      display columns/4/.style={column name=\specialcell{30-34 \\ years}, column type={r}},
+      display columns/5/.style={column name=\specialcell{35-39 \\ years}, column type={r}},
+      display columns/6/.style={column name=\specialcell{15-19 \\ years}, column type={r}},
+      display columns/7/.style={column name=\specialcell{20-24 \\ years}, column type={r}},
+      display columns/8/.style={column name=\specialcell{25-29 \\ years}, column type={r}},
+      display columns/9/.style={column name=\specialcell{30-34 \\ years}, column type={r}},
+      display columns/10/.style={column name=\specialcell{35-39 \\ years}, column type={r}},
+      every head row/.style={
+        before row={\toprule
+					& \multicolumn{5}{c}{People with incident diabetes (\%)} & \multicolumn{5}{c}{People without diabetes (\%)} \\
+					},
+        after row={\midrule}
+            },
+        every last row/.style={after row=\bottomrule},
+    ]{AD.csv}
+  \end{center}
+\end{table}
 
 
 \begin{table}[h!]
   \begin{center}
-    \caption{Average annual percent change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.}
+    \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.}
     \label{APCs}
      \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
       multicolumn names,
@@ -2105,9 +2206,10 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
 \pgfkeyssetvalue{/pgfplots/table/@cell content}
 {\multirow{3}{*}{##1}}}},
       display columns/2/.style={column name=Sex, column type={l}, text indicator="},
-      display columns/3/.style={column name=Type 1 diabetes, column type={r}, column type/.add={|}{}},
-      display columns/4/.style={column name=Type 2 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/3/.style={column name=Typical type 1 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/4/.style={column name=Typical type 2 diabetes, column type={r}, column type/.add={|}{}},
       display columns/5/.style={column name=Uncertain diabetes type, column type={r}, column type/.add={|}{|}},
+      display columns/6/.style={column name=Total diabetes, column type={r}, column type/.add={}{|}},
       every head row/.style={
         before row={\toprule
 					},
@@ -2131,12 +2233,9 @@ collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country calendar_yr)
 gen inc1 = 1000*inc_t1d/pys_nondm
 gen inc2 = 1000*inc_t2d/pys_nondm
 gen inc3 = 1000*inc_unc/pys_nondm
-forval i = 1/8 {
+foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
-}
-if `i' == 2 {
-local c = "Catalonia, Spain"
 }
 if `i' == 3 {
 local c = "Denmark"
@@ -2156,13 +2255,18 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
+local co = "`c'"
+if `i' == 2 {
+local c = "Catalonia, Spain"
+local co = "Spain (Catalonia)"
+}
 twoway ///
 (line inc1 calendar if country == "`c'", color(dknavy)) ///
 (line inc2 calendar if country == "`c'", color(cranberry)) ///
 (line inc3 calendar if country == "`c'", color(magenta)) ///
 , legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
-order(1 "Type 1 diabetes" ///
-2 "Type 2 diabetes" ///
+order(1 "Typical type 1 diabetes" ///
+2 "Typical type 2 diabetes" ///
 3 "Uncertain type") ///
 rows(3)) ///
 graphregion(color(white)) ///
@@ -2171,8 +2275,8 @@ ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
 yscale(log range(0.05 6)) ///
 ytitle("Incidence rate (per 1,000 person-years)") ///
 xtitle("Calendar year") ///
-title("`c'", placement(west) color(gs0) size(medium))
-texdoc graph, label(`c'crude) caption(Crude incidence rates of diabetes in `c' among people aged 15-39 years, by diabetes type)
+title("`co'", placement(west) color(gs0) size(medium))
+texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type)
 }
 use dbasev9, clear
 drop if cal >= 2021
@@ -2180,12 +2284,9 @@ collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar
 gen inc1 = 1000*inc_t1d/pys_nondm
 gen inc2 = 1000*inc_t2d/pys_nondm
 gen inc3 = 1000*inc_unc/pys_nondm
-forval i = 1/8 {
+foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
-}
-if `i' == 2 {
-local c = "Catalonia, Spain"
 }
 if `i' == 3 {
 local c = "Denmark"
@@ -2204,6 +2305,11 @@ local c = "Scotland"
 }
 if `i' == 8 {
 local c = "South Korea"
+}
+local co = "`c'"
+if `i' == 2 {
+local c = "Catalonia, Spain"
+local co = "Spain (Catalonia)"
 }
 twoway ///
 (line inc1 calendar if country == "`c'" & sex == "F", color(dknavy)) ///
@@ -2213,8 +2319,8 @@ twoway ///
 (line inc3 calendar if country == "`c'" & sex == "F", color(magenta)) ///
 (line inc3 calendar if country == "`c'" & sex == "M", color(magenta) lpattern(shortdash)) ///
 , legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
-order(1 "Type 1 diabetes" ///
-3 "Type 2 diabetes" ///
+order(1 "Typical type 1 diabetes" ///
+3 "Typical type 2 diabetes" ///
 5 "Uncertain type") ///
 rows(3)) ///
 graphregion(color(white)) ///
@@ -2223,8 +2329,8 @@ ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
 yscale(log range(0.05 6)) ///
 ytitle("Incidence rate (per 1,000 person-years)") ///
 xtitle("Calendar year") ///
-title("`c'", placement(west) color(gs0) size(medium))
-texdoc graph, label(`c'crude) caption(Crude incidence rates of diabetes in `c' among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.)
+title("`co'", placement(west) color(gs0) size(medium))
+texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.)
 }
 texdoc stlog close
 
@@ -2233,19 +2339,16 @@ texdoc stlog close
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{APCfig1.pdf}
-    \caption{Average annual percent change in the incidence rates of diabetes, by jurisdiction and diabetes type}
+    \caption{Average annual change in the incidence rates of diabetes, by jurisdiction and diabetes type}
     \label{AAPCfig1}
 \end{figure}
 
 ***/
 
 texdoc stlog, nolog
-forval i = 1/8 {
+foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
-}
-if `i' == 2 {
-local c = "Catalonia, Spain"
 }
 if `i' == 3 {
 local c = "Denmark"
@@ -2264,6 +2367,11 @@ local c = "Scotland"
 }
 if `i' == 8 {
 local c = "South Korea"
+}
+local co = "`c'"
+if `i' == 2 {
+local c = "Catalonia, Spain"
+local co = "Spain (Catalonia)"
 }
 graph combine ///
 TTFATF_`i'_F_inc_t1d.gph ///
@@ -2273,14 +2381,11 @@ TTFATF_`i'_M_inc_t2d.gph ///
 TTFATF_`i'_F_inc_uncertaint.gph ///
 TTFATF_`i'_M_inc_uncertaint.gph ///
 , altshrink rows(3) xsize(3.5) graphregion(color(white))
-texdoc graph, label(`c' agespec) caption(Incidence rates of diabetes in `c' by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex)
+texdoc graph, label(`c' agespec) figure(h!) caption(Incidence rates of diabetes in `co' by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex)
 }
-forval i = 1/8 {
+foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
-}
-if `i' == 2 {
-local c = "Catalonia, Spain"
 }
 if `i' == 3 {
 local c = "Denmark"
@@ -2299,6 +2404,11 @@ local c = "Scotland"
 }
 if `i' == 8 {
 local c = "South Korea"
+}
+local co = "`c'"
+if `i' == 2 {
+local c = "Catalonia, Spain"
+local co = "Spain (Catalonia)"
 }
 graph combine ///
 Escape_`i'_F_inc_t1d.gph ///
@@ -2308,16 +2418,13 @@ Escape_`i'_M_inc_t2d.gph ///
 Escape_`i'_F_inc_uncertaint.gph ///
 Escape_`i'_M_inc_uncertaint.gph ///
 , altshrink rows(3) xsize(3.5) graphregion(color(white))
-texdoc graph, label(`c' agespec) ///
-caption(Incidence rates of diabetes in `c' for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex)
+texdoc graph, label(`c' agespec) figure(h!) ///
+caption(Incidence rates of diabetes in `co' for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex)
 }
-forval i = 1/8 {
+foreach i in 1 3 4 5 6 7 8 2 {
 foreach iii in inc_t1d inc_t2d inc_uncertaint {
 if `i' == 1 {
 local c = "Australia"
-}
-if `i' == 2 {
-local c = "Catalonia, Spain"
 }
 if `i' == 3 {
 local c = "Denmark"
@@ -2337,11 +2444,16 @@ local c = "Scotland"
 if `i' == 8 {
 local c = "South Korea"
 }
+local co = "`c'"
+if `i' == 2 {
+local c = "Catalonia, Spain"
+local co = "Spain (Catalonia)"
+}
 if "`iii'" == "inc_t1d" {
-local oc = "Type 1 diabetes"
+local oc = "Typical type 1 diabetes"
 }
 else if "`iii'" == "inc_t2d" {
-local oc = "Type 2 diabetes"
+local oc = "Typical type 2 diabetes"
 }
 else {
 local oc = "Uncertain diabetes type"
@@ -2369,7 +2481,7 @@ yline(0, lcolor(gs0)) ///
 ylabel(-5(5)15, angle(0)) ///
 xtitle("Attained age (years)") ///
 xlabel(15(5)40) ///
-title("`c' - `oc'", placement(west) size(medium) color(gs0))
+title("`co' - `oc'", placement(west) size(medium) color(gs0))
 graph save "Graph" Apage_`i'_`iii'_`a', replace
 }
 }
@@ -2381,7 +2493,7 @@ Apage_`i'_inc_t2d_2.gph ///
 Apage_`i'_inc_uncertaint_1.gph ///
 Apage_`i'_inc_uncertaint_2.gph ///
 , altshrink rows(3) xsize(3.5) graphregion(color(white))
-texdoc graph, label(`c' apcageg) caption(Annual percent change in the incidence rates of diabetes in `c' by age, by diabetes type and sex. ///
+texdoc graph, label(`c' apcageg) figure(h!) caption(Annual change in the incidence rates of diabetes in `co' by age, by diabetes type and sex. ///
 Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction ///
 between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of ///
 age and calendar time in the interaction.)
