@@ -35,7 +35,7 @@ set linesize 100
 \begin{titlepage}
     \begin{flushright}
         \Huge
-        \textbf{Trends in incidence of young-onset diabetes by type: 
+        \textbf{Trends in incidence of young-onset diabetes by diabetes type: 
 a multi-national population-based study \\
 Protocol}
 \color{black}
@@ -51,6 +51,7 @@ https://github.com/jimb0w/YO \\
         \Large
 
 \noindent
+Correspondence to: \\
 Jedidiah Morton \\
 \color{blue}
 \href{mailto:Jedidiah.Morton@Monash.edu}{Jedidiah.Morton@monash.edu} \\ 
@@ -60,28 +61,6 @@ Research Fellow \\
 \color{black}
 Monash University, Melbourne, Australia \\\
 Baker Heart and Diabetes Institute, Melbourne, Australia \\
-\\
-\noindent
-Lei Chen \\
-Research Officer \\
-Baker Heart and Diabetes Institute, Melbourne, Australia \\
-\\
-\noindent
-Bendix Carstensen \\
-Senior Statistician \\
-Steno Diabetes Center Copenhagen, Herlev, Denmark \\
-Department of Biostatistics, University of Copenhagen \\
-\\
-\noindent
-Agus Salim \\
-Chief Biostatician \\
-Baker Heart and Diabetes Institute, Melbourne, Australia \\
-\\
-\noindent
-Dianna Magliano \\
-Professor and Head of Diabetes and Population Health \\
-Baker Heart and Diabetes Institute, Melbourne, Australia \\
-
 \end{titlepage}
 
 \pagebreak
@@ -91,8 +70,9 @@ Baker Heart and Diabetes Institute, Melbourne, Australia \\
 \pagebreak
 \section{Preface}
 
+This is the protocol for the paper ``Trends in incidence of young-onset diabetes by diabetes type: a multi-national population-based study'' (cite).
 The methods used in this analyses are drawn heavily/almost entirely from Bendix Carstensen 
-(see \cite{MaglianoLDE2021,CarstensenSTATMED2007}). \\
+(see \cite{MaglianoLDE2021,CarstensenSTATMED2007}).
 To generate this document, the Stata package texdoc \cite{Jann2016Stata} was used, which is 
 available from: \color{blue} \url{http://repec.sowi.unibe.ch/stata/texdoc/} \color{black} (accessed 14 November 2022). The 
 final Stata do file and this pdf are available at: \color{blue} \url{https://github.com/jimb0w/YO} \color{black}.
@@ -184,9 +164,9 @@ texdoc stlog, cmdlog
 use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country calendar_yr)
-gen inc1 = 1000*inc_t1d/pys_nondm
-gen inc2 = 1000*inc_t2d/pys_nondm
-gen inc3 = 1000*inc_unc/pys_nondm
+gen inc1 = 100000*inc_t1d/pys_nondm
+gen inc2 = 100000*inc_t2d/pys_nondm
+gen inc3 = 100000*inc_unc/pys_nondm
 foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
@@ -225,9 +205,9 @@ order(1 "Typical type 1 diabetes" ///
 rows(3)) ///
 graphregion(color(white)) ///
 xlabel(2000(5)2020) ///
-ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
-yscale(log range(0.05 6)) ///
-ytitle("Incidence rate (per 1,000 person-years)") ///
+ylabel(1 2 5 10 20 50 100 500, angle(0) format(%9.0f)) ///
+yscale(log range(1 500)) ///
+ytitle("Incidence rate (per 100,000 person-years)") ///
 xtitle("Calendar year") ///
 title("`co'", placement(west) color(gs0) size(medium))
 texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type)
@@ -235,9 +215,9 @@ texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabet
 use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar_yr)
-gen inc1 = 1000*inc_t1d/pys_nondm
-gen inc2 = 1000*inc_t2d/pys_nondm
-gen inc3 = 1000*inc_unc/pys_nondm
+gen inc1 = 100000*inc_t1d/pys_nondm
+gen inc2 = 100000*inc_t2d/pys_nondm
+gen inc3 = 100000*inc_unc/pys_nondm
 foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
@@ -279,9 +259,9 @@ order(1 "Typical type 1 diabetes" ///
 rows(3)) ///
 graphregion(color(white)) ///
 xlabel(2000(5)2020) ///
-ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
-yscale(log range(0.05 6)) ///
-ytitle("Incidence rate (per 1,000 person-years)") ///
+ylabel(0.5 "0.5" 1 2 5 10 20 50 100 200 500, angle(0)) ///
+yscale(log range(0.49 500)) ///
+ytitle("Incidence rate (per 100,000 person-years)") ///
 xtitle("Calendar year") ///
 title("`co'", placement(west) color(gs0) size(medium))
 texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.)
@@ -424,7 +404,7 @@ mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
 mkspline cohsp = coh, cubic knots(`CO1' `CO2' `CO3' `CO4')
 predict _Rate, ir
 predict errr, stdp
-replace _Rate = _Rate*1000
+replace _Rate = _Rate*100000
 gen lb = exp(ln(_Rate)-1.96*errr)
 gen ub = exp(ln(_Rate)+1.96*errr)
 gen country = "`c'"
@@ -542,21 +522,13 @@ order(10 "35" ///
 2 "15") ///
 cols(1)) ///
 graphregion(color(white)) ///
-ylabel(0.002 "0.002" ///
-0.005 "0.005" ///
-0.01 "0.01" ///
-0.02 "0.02" ///
-0.05 "0.05" ///
-0.1 "0.1" ///
-0.2 "0.2" ///
+ylabel(0.2 "0.2" ///
 0.5 "0.5" ///
-1.0 "1.0" ///
-2.0 "2.0" ///
-5.0 "5.0", format(%9.3f) grid angle(0)) ///
-yscale(range(0.001 5.05) log) ///
+1 2 5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(0.1 505) log) ///
 xscale(range(2000 2020)) ///
 xlabel(2000(5)2020, nogrid) ///
-ytitle("Incidence rate (per 1,000 person-years)", margin(a+2)) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`co' - `oc' - `s'", placement(west) color(black) size(medium))
 graph save "Graph" Escape_`i'_`ii'_`iii', replace
@@ -569,16 +541,16 @@ local cmn = calmin[1]
 local cmu = calmen[1]
 local cmx = calmax[1]
 if "`iii'" == "inc_t1d" {
-local ylab = "0(0.2)0.8"
-local yft = "%9.2f"
+local ylab = "0(20)120"
+local yft = "%9.0f"
 }
 if "`iii'" == "inc_t2d" {
-local ylab = "0(1)10"
+local ylab = "0(100)1000"
 local yft = "%9.0f"
 }
 if "`iii'" == "inc_uncertaint" {
-local ylab = "0(0.2)0.8"
-local yft = "%9.1f"
+local ylab = "0(40)280"
+local yft = "%9.0f"
 }
 twoway ///
 (rarea ub lb age if calendar == calmin, color("`col1'%30") fintensity(inten80) lwidth(none)) ///
@@ -596,7 +568,7 @@ graphregion(color(white)) ///
 ylabel(`ylab', format(`yft') grid angle(0)) ///
 xscale(range(15 40)) ///
 xlabel(15(5)40, nogrid) ///
-ytitle("Incidence rate (per 1,000 person-years)", margin(a+2)) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
 xtitle("Age (years)") ///
 title("`co' - `oc' - `s'", placement(west) color(black) size(medium))
 graph save "Graph" TTFATF_`i'_`ii'_`iii', replace
@@ -752,21 +724,13 @@ order(2 "`C1'" ///
 16 "`C8'") ///
 cols(1)) ///
 graphregion(color(white)) ///
-ylabel(0.002 "0.002" ///
-0.005 "0.005" ///
-0.01 "0.01" ///
-0.02 "0.02" ///
-0.05 "0.05" ///
-0.1 "0.1" ///
-0.2 "0.2" ///
+ylabel(0.2 "0.2" ///
 0.5 "0.5" ///
-1.0 "1.0" ///
-2.0 "2.0" ///
-5.0 "5.0", format(%9.3f) grid angle(0)) ///
-yscale(range(0.001 5.05) log) ///
+1 2 5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(0.1 505) log) ///
 xscale(range(2000 2020)) ///
 xlabel(2000(5)2020, nogrid) ///
-ytitle("Incidence rate (per 1,000 person-years)", margin(a+2)) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`oc' - `s'", placement(west) color(black) size(medium))
 graph save "Graph" Alive_`ii'_`iii'_`age', replace
@@ -1040,7 +1004,7 @@ ylabel( ///
 5.0 "5.0" 10 "10.0" 20 "20.0", grid angle(0)) ///
 yscale(range(0.02 30) log) ///
 xlabel(15(5)35, nogrid) ///
-ytitle("Incidence rate ratio", margin(a+2)) ///
+ytitle("Incidence rate ratio T2D:T1D", margin(a+2)) ///
 xtitle("Age") yline(1, lcol(black)) ///
 title("`iii'", placement(west) color(black) size(medium))
 graph save "Graph" Possession_`ii', replace
@@ -1051,7 +1015,7 @@ graph combine ///
 Possession_F.gph ///
 Possession_M.gph ///
 , altshrink rows(1) xsize(10) graphregion(color(white))
-texdoc graph, label(smr111) figure(h!) caption(Incidence rate ratio for typical type 2 vs. typical type 1 diabetes, ///
+texdoc graph, label(smr111) figure(h!) caption(Incidence rate ratio for typical type 2 diabetes (T2D) vs. typical type 1 diabetes (T1D), ///
 by sex in 2017. South Korea is excluded due to insufficient numbers in type 1 diabetes.)
 graph export "/Users/jed/Documents/YO/Figure 3.pdf", as(pdf) name("Graph") replace
 texdoc stlog close
@@ -1131,8 +1095,6 @@ bysort age : replace age = age+_n-0.5
 mkspline agesp = age, cubic knots(15(5)40)
 reg esp2010 agesp*
 predict A
-replace esp2010 = esp2010/1000000
-replace A = A/1000000
 drop if age > 35
 su(esp2010)
 gen esp2010prop = esp2010/r(sum)
@@ -1277,12 +1239,12 @@ merge m:1 age using refpop
 drop _merge
 gen double expdeath = _Rate*B
 bysort cal : egen double expdeath1 = sum(expdeath)
-gen stdrate = 1000*expdeath1
+gen stdrate = 100000*expdeath1
 gen SEC1 = ((B^2)*(_Rate*(1-_Rate)))/pys_nondm
 bysort cal : egen double SEC2 = sum(SEC1)
 gen double SE = sqrt(SEC2)
-gen lb = 1000*(expdeath1-1.96*SE)
-gen ub = 1000*(expdeath1+1.96*SE)
+gen lb = 100000*(expdeath1-1.96*SE)
+gen ub = 100000*(expdeath1+1.96*SE)
 bysort cal (age) : keep if _n == 1
 noisily count if lb < 0
 keep cal stdrate lb ub
@@ -1355,20 +1317,11 @@ order(2 "`C1'" ///
 14 "`C7'") ///
 cols(2)) ///
 graphregion(color(white)) ///
-ylabel(0.005 "0.005" ///
-0.01 "0.01" ///
-0.02 "0.02" ///
-0.05 "0.05" ///
-0.1 "0.1" ///
-0.2 "0.2" ///
-0.5 "0.5" ///
-1.0 "1.0" ///
-2.0 "2.0" ///
-5.0 "5.0", format(%9.3f) grid angle(0)) ///
-yscale(range(0.004 5.05) log) ///
+ylabel(5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(5 500) log) ///
 xscale(range(2000 2020)) ///
 xlabel(2000(5)2020, nogrid) ///
-ytitle("Incidence rate (per 1,000 person-years)", margin(a+2)) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`oc' - `s'", placement(west) color(black) size(medium))
 }
@@ -1390,20 +1343,11 @@ twoway ///
 (line stdrate calendar if country == "`C7'", color("`col7'") lpattern(solid)) ///
 , legend(off) ///
 graphregion(color(white)) ///
-ylabel(0.005 "0.005" ///
-0.01 "0.01" ///
-0.02 "0.02" ///
-0.05 "0.05" ///
-0.1 "0.1" ///
-0.2 "0.2" ///
-0.5 "0.5" ///
-1.0 "1.0" ///
-2.0 "2.0" ///
-5.0 "5.0", format(%9.3f) grid angle(0)) ///
-yscale(range(0.004 5.05) log) ///
+ylabel(5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(5 500) log) ///
 xscale(range(2000 2020)) ///
 xlabel(2000(5)2020, nogrid) ///
-ytitle("Incidence rate (per 1,000 person-years)", margin(a+2)) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`oc' - `s'", placement(west) color(black) size(medium))
 }
@@ -1475,20 +1419,11 @@ order(2 "`C1'" ///
 16 "`C8'") ///
 cols(2)) ///
 graphregion(color(white)) ///
-ylabel(0.005 "0.005" ///
-0.01 "0.01" ///
-0.02 "0.02" ///
-0.05 "0.05" ///
-0.1 "0.1" ///
-0.2 "0.2" ///
-0.5 "0.5" ///
-1.0 "1.0" ///
-2.0 "2.0" ///
-5.0 "5.0", format(%9.3f) grid angle(0)) ///
-yscale(range(0.004 5.05) log) ///
+ylabel(5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(5 500) log) ///
 xscale(range(2000 2020)) ///
 xlabel(2000(5)2020, nogrid) ///
-ytitle("Incidence rate (per 1,000 person-years)", margin(a+2)) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`oc' - `s'", placement(west) color(black) size(medium))
 }
@@ -1512,20 +1447,11 @@ twoway ///
 (line stdrate calendar if country == "`C8'", color("`col8'") lpattern(solid)) ///
 , legend(off) ///
 graphregion(color(white)) ///
-ylabel(0.005 "0.005" ///
-0.01 "0.01" ///
-0.02 "0.02" ///
-0.05 "0.05" ///
-0.1 "0.1" ///
-0.2 "0.2" ///
-0.5 "0.5" ///
-1.0 "1.0" ///
-2.0 "2.0" ///
-5.0 "5.0", format(%9.3f) grid angle(0)) ///
-yscale(range(0.004 5.05) log) ///
+ylabel(5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(5 500) log) ///
 xscale(range(2000 2020)) ///
 xlabel(2000(5)2020, nogrid) ///
-ytitle("Incidence rate (per 1,000 person-years)", margin(a+2)) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
 xtitle("Calendar year") ///
 title("`oc' - `s'", placement(west) color(black) size(medium))
 }
@@ -1900,8 +1826,909 @@ age and calendar time in the interaction.)
 }
 texdoc stlog close
 
+
+
+
 /***
 \color{black}
+
+\clearpage
+\section{Sensitivity analyses}
+
+\subsection{Re-allocating uncertain diabetes type}
+
+In this sensitivity analysis, we will re-allocated people in the uncertain diabetes type category
+to either type 1 diabetes or type 2 diabetes, and assess the impact this has on age-adjusted trends 
+and changes over time. 
+
+
+
+\color{Blue4}
+***/
+
+
+texdoc stlog, cmdlog nodo
+quietly {
+forval i = 1/8 {
+foreach ii in M F {
+foreach iii in inc_t1d inc_t2d {
+if `i' == 1 {
+local c = "Australia"
+}
+if `i' == 2 {
+local c = "Catalonia, Spain"
+}
+if `i' == 3 {
+local c = "Denmark"
+}
+if `i' == 4 {
+local c = "Finland"
+}
+if `i' == 5 {
+local c = "Hungary"
+}
+if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
+local c = "South Korea"
+}
+use dbasev9, clear
+replace `iii' = `iii'+inc_uncertaint
+drop if cal >= 2021
+if "`iii'" == "inc_t1d" {
+drop if age_gp == "35-39"
+}
+keep if country == "`c'" & sex == "`ii'"
+rename age_gp age
+replace age = substr(age,1,2)
+destring age, replace
+replace age = age+2.5
+replace calendar = calendar-2009.5
+gen coh = calendar-age
+centile(age), centile(5 35 65 95)
+local A1 = r(c_1)
+local A2 = r(c_2)
+local A3 = r(c_3)
+local A4 = r(c_4)
+mkspline agesp = age, cubic knots(`A1' `A2' `A3' `A4')
+su(calendar), detail
+local rang = r(max)-r(min)
+if `rang' < 8 {
+centile calendar, centile(25 75)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2')
+}
+else if inrange(`rang',8,11.9) {
+centile calendar, centile(10 50 90)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3')
+}
+else if inrange(`rang',12,15.9) {
+centile calendar, centile(5 35 65 95)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+local CK4 = r(c_4)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4')
+}
+else {
+centile calendar, centile(5 27.5 50 72.5 95)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+local CK4 = r(c_4)
+local CK5 = r(c_5)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
+}
+centile(coh), centile(5 35 65 95)
+local CO1 = r(c_1)
+local CO2 = r(c_2)
+local CO3 = r(c_3)
+local CO4 = r(c_4)
+mkspline cohsp = coh, cubic knots(`CO1' `CO2' `CO3' `CO4')
+poisson `iii' agesp* timesp* cohsp*, exposure(pys)
+keep age calendar pys
+expand 5
+replace pys=pys/5
+bysort cal age : replace age = age+_n-3.5
+sort age cal
+gen coh = calendar-age
+mkspline agesp = age, cubic knots(`A1' `A2' `A3' `A4')
+if `rang' < 7.99 {
+mkspline timesp = calendar, cubic knots(`CK1' `CK2')
+}
+else if inrange(`rang',8,11.99) {
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3')
+}
+else if inrange(`rang',12,15.99) {
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4')
+}
+else {
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
+}
+mkspline cohsp = coh, cubic knots(`CO1' `CO2' `CO3' `CO4')
+predict _Rate, ir
+replace cal = cal+2009.5
+keep cal age pys _Rate
+if "`iii'" == "inc_t1d" {
+merge m:1 age using refpop1
+}
+else {
+merge m:1 age using refpop
+}
+drop _merge
+gen double expdeath = _Rate*B
+bysort cal : egen double expdeath1 = sum(expdeath)
+gen stdrate = 100000*expdeath1
+gen SEC1 = ((B^2)*(_Rate*(1-_Rate)))/pys_nondm
+bysort cal : egen double SEC2 = sum(SEC1)
+gen double SE = sqrt(SEC2)
+gen lb = 100000*(expdeath1-1.96*SE)
+gen ub = 100000*(expdeath1+1.96*SE)
+bysort cal (age) : keep if _n == 1
+noisily count if lb < 0
+keep cal stdrate lb ub
+gen country = "`c'"
+gen sex = "`ii'"
+gen OC = "`iii'"
+save STD_Rate_`i'_`ii'_`iii'_US, replace
+}
+}
+}
+}
+foreach ii in M F {
+foreach iii in inc_t1d inc_t2d {
+if "`ii'" == "M" {
+local s = "Males"
+}
+else {
+local s = "Females"
+}
+if "`iii'" == "inc_t1d" {
+local oc = "Typical type 1 diabetes"
+}
+else if "`iii'" == "inc_t2d" {
+local oc = "Typical type 2 diabetes"
+}
+else {
+local oc = "Uncertain diabetes type"
+}
+local col1 = "0 0 255"
+local col2 = "75 0 130"
+local col3 = "255 0 255"
+local col4 = "255 0 0"
+local col5 = "255 125 0"
+local col6 = "0 125 0"
+local col7 = "0 175 255"
+local col8 = "0 0 0"
+clear
+forval i = 1/8 {
+append using STD_Rate_`i'_`ii'_`iii'_US
+}
+replace country = "Spain (Catalonia)" if country == "Catalonia, Spain"
+preserve
+bysort country : keep if _n == 1
+forval i = 1/8 {
+local C`i' = country[`i']
+}
+restore
+if "`ii'" == "F" & "`iii'" == "inc_t2d" {
+twoway ///
+(rarea ub lb calendar if country == "`C1'", color("`col1'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C1'", color("`col1'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C2'", color("`col2'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C2'", color("`col2'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C3'", color("`col3'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C3'", color("`col3'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C4'", color("`col4'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C4'", color("`col4'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C5'", color("`col5'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C5'", color("`col5'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C6'", color("`col6'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C6'", color("`col6'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C7'", color("`col7'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C7'", color("`col7'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C8'", color("`col8'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C8'", color("`col8'") lpattern(solid)) ///
+, legend(symxsize(0.13cm) position(4) ring(0) region(lcolor(white) color(none)) ///
+order(2 "`C1'" ///
+4 "`C2'" ///
+6 "`C3'" ///
+8 "`C4'" ///
+10 "`C5'" ///
+12 "`C6'" ///
+14 "`C7'" ///
+16 "`C8'") ///
+cols(2)) ///
+graphregion(color(white)) ///
+ylabel(5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(5 500) log) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
+xtitle("Calendar year") ///
+title("`oc' - `s'", placement(west) color(black) size(medium))
+}
+else {
+twoway ///
+(rarea ub lb calendar if country == "`C1'", color("`col1'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C1'", color("`col1'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C2'", color("`col2'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C2'", color("`col2'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C3'", color("`col3'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C3'", color("`col3'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C4'", color("`col4'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C4'", color("`col4'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C5'", color("`col5'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C5'", color("`col5'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C6'", color("`col6'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C6'", color("`col6'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C7'", color("`col7'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C7'", color("`col7'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C8'", color("`col8'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C8'", color("`col8'") lpattern(solid)) ///
+, legend(off) ///
+graphregion(color(white)) ///
+ylabel(5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(5 500) log) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
+xtitle("Calendar year") ///
+title("`oc' - `s'", placement(west) color(black) size(medium))
+}
+graph save "Graph" Alive_`ii'_`iii'_STD_US, replace
+}
+}
+texdoc stlog close
+texdoc stlog, cmdlog
+graph combine ///
+Alive_F_inc_t1d_STD_US.gph ///
+Alive_M_inc_t1d_STD_US.gph ///
+Alive_F_inc_t2d_STD_US.gph ///
+Alive_M_inc_t2d_STD_US.gph ///
+, altshrink rows(2) xsize(5) graphregion(color(white))
+texdoc graph, label(STDfigus) figure(h!) caption(Age-standardized incidence rates of diabetes for people aged 15-39 years, by diabetes type and sex. ///
+Includes all uncertain diabetes cases as either type 1 or type 2 diabetes.)
+texdoc stlog close
+texdoc stlog, cmdlog nodo
+forval i = 1/8 {
+forval ii = 0/2 {
+forval iii = 1/2 {
+if `i' == 1 {
+local c = "Australia"
+}
+if `i' == 2 {
+local c = "Catalonia, Spain"
+}
+if `i' == 3 {
+local c = "Denmark"
+}
+if `i' == 4 {
+local c = "Finland"
+}
+if `i' == 5 {
+local c = "Hungary"
+}
+if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
+local c = "South Korea"
+}
+use dbasev9, clear
+drop if cal >= 2021
+if `iii' == 1 {
+drop if age_gp == "35-39"
+}
+keep if country == "`c'" 
+if `ii' == 1 {
+keep if sex == "M"
+}
+if `ii' == 2 {
+keep if sex == "F"
+}
+rename age_gp age
+replace age = substr(age,1,2)
+destring age, replace
+replace age = age+2.5
+su(calendar), detail
+local lb = r(min)
+local ub = r(max)
+replace calendar = calendar-2009.5
+gen coh = calendar-age
+centile(age), centile(5 35 65 95)
+local A1 = r(c_1)
+local A2 = r(c_2)
+local A3 = r(c_3)
+local A4 = r(c_4)
+mkspline agesp = age, cubic knots(`A1' `A2' `A3' `A4')
+if `iii' == 1 {
+replace inc_t1d = inc_t1d+inc_uncertaint
+poisson inc_t1d calendar agesp*, exposure(pys)
+}
+if `iii' == 2 {
+replace inc_t2d = inc_t2d+inc_uncertaint
+poisson inc_t2d calendar agesp*, exposure(pys)
+}
+matrix A_`i'_`ii'_`iii' = (`lb',`ub',`i',`ii',`iii',r(table)[1,1], r(table)[5,1], r(table)[6,1])
+}
+}
+matrix A_`i' = (A_`i'_0_1,A_`i'_0_2\ ///
+A_`i'_1_1,A_`i'_1_2\ ///
+A_`i'_2_1,A_`i'_2_2)
+}
+matrix A = (A_1\A_2\A_3\A_4\A_5\A_6\A_7\A_8)
+clear
+svmat A
+gen country=""
+bysort A3 (A2) : replace country = "Australia" if A3 == 1 & _n == 1
+bysort A3 (A2) : replace country = "Spain (Catalonia)" if A3 == 2 & _n == 1
+bysort A3 (A2) : replace country = "Denmark" if A3 == 3 & _n == 1
+bysort A3 (A2) : replace country = "Finland" if A3 == 4 & _n == 1
+bysort A3 (A2) : replace country = "Hungary" if A3 == 5 & _n == 1
+bysort A3 (A2) : replace country = "Japan" if A3 == 6 & _n == 1
+bysort A3 (A2) : replace country = "Scotland" if A3 == 7 & _n == 1
+bysort A3 (A2) : replace country = "South Korea" if A3 == 8 & _n == 1
+tostring A1 A2, replace format(%9.0f)
+bysort A3 (A2) : gen time = A1+"-"+A2 if _n == 1
+gen sex = "Overall" if A4 == 0
+replace sex = "Males" if A4 == 1
+replace sex = "Females" if A4 == 2
+drop A9-A13
+foreach var of varlist A6-A16 {
+replace `var' = 100*(exp(`var')-1)
+}
+tostring A6-A16, replace force format(%9.1f)
+gen T1 = "$" + A6 + "$ ($" + A7 + "$, $" + A8 + "$)"
+gen T2 = "$" + A14 + "$ ($" + A15 + "$, $" + A16 + "$)"
+gen njm = _n
+gen nj =0
+replace nj = 1 if _n == 4 | _n == 5 | _n == 6
+sort nj njm
+keep country time sex T1 T2
+export delimited using APCs_US.csv, delimiter(":") novarnames replace
+texdoc stlog close
+
+/***
+\color{black}
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.
+Includes all uncertain diabetes cases as either type 1 or type 2 diabetes}
+    \label{APCs}
+     \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
+      multicolumn names,
+      col sep=colon,
+      header=false,
+      string type,
+	  display columns/0/.style={column name=Country,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+	  display columns/1/.style={column name=Period,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+      display columns/2/.style={column name=Sex, column type={l}, text indicator="},
+      display columns/3/.style={column name=Typical type 1 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/4/.style={column name=Typical type 2 diabetes, column type={r}, column type/.add={|}{}},
+      every head row/.style={
+        before row={\toprule
+					},
+        after row={\midrule}
+            },
+        every nth row={3}{before row=\midrule},
+        every last row/.style={after row=\bottomrule},
+    ]{APCs_US.csv}
+  \end{center}
+\end{table}
+
+\subsection{Excluding people aged 35-39 altogether}
+
+This sensitivity analysis will restrict the analysis cohort to people aged 15-34 only. 
+
+\color{Blue4}
+***/
+
+
+texdoc stlog, cmdlog nodo
+quietly {
+forval i = 1/8 {
+foreach ii in M F {
+foreach iii in inc_t1d inc_t2d inc_uncertaint {
+if `i' == 1 {
+local c = "Australia"
+}
+if `i' == 2 {
+local c = "Catalonia, Spain"
+}
+if `i' == 3 {
+local c = "Denmark"
+}
+if `i' == 4 {
+local c = "Finland"
+}
+if `i' == 5 {
+local c = "Hungary"
+}
+if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
+local c = "South Korea"
+}
+use dbasev9, clear
+drop if cal >= 2021
+drop if age_gp == "35-39"
+keep if country == "`c'" & sex == "`ii'"
+rename age_gp age
+replace age = substr(age,1,2)
+destring age, replace
+replace age = age+2.5
+replace calendar = calendar-2009.5
+gen coh = calendar-age
+centile(age), centile(5 35 65 95)
+local A1 = r(c_1)
+local A2 = r(c_2)
+local A3 = r(c_3)
+local A4 = r(c_4)
+mkspline agesp = age, cubic knots(`A1' `A2' `A3' `A4')
+su(calendar), detail
+local rang = r(max)-r(min)
+if `rang' < 8 {
+centile calendar, centile(25 75)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2')
+}
+else if inrange(`rang',8,11.9) {
+centile calendar, centile(10 50 90)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3')
+}
+else if inrange(`rang',12,15.9) {
+centile calendar, centile(5 35 65 95)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+local CK4 = r(c_4)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4')
+}
+else {
+centile calendar, centile(5 27.5 50 72.5 95)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+local CK4 = r(c_4)
+local CK5 = r(c_5)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
+}
+centile(coh), centile(5 35 65 95)
+local CO1 = r(c_1)
+local CO2 = r(c_2)
+local CO3 = r(c_3)
+local CO4 = r(c_4)
+mkspline cohsp = coh, cubic knots(`CO1' `CO2' `CO3' `CO4')
+poisson `iii' agesp* timesp* cohsp*, exposure(pys)
+keep age calendar pys
+expand 5
+replace pys=pys/5
+bysort cal age : replace age = age+_n-3.5
+sort age cal
+gen coh = calendar-age
+mkspline agesp = age, cubic knots(`A1' `A2' `A3' `A4')
+if `rang' < 7.99 {
+mkspline timesp = calendar, cubic knots(`CK1' `CK2')
+}
+else if inrange(`rang',8,11.99) {
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3')
+}
+else if inrange(`rang',12,15.99) {
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4')
+}
+else {
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
+}
+mkspline cohsp = coh, cubic knots(`CO1' `CO2' `CO3' `CO4')
+predict _Rate, ir
+replace cal = cal+2009.5
+keep cal age pys _Rate
+merge m:1 age using refpop1
+drop _merge
+gen double expdeath = _Rate*B
+bysort cal : egen double expdeath1 = sum(expdeath)
+gen stdrate = 100000*expdeath1
+gen SEC1 = ((B^2)*(_Rate*(1-_Rate)))/pys_nondm
+bysort cal : egen double SEC2 = sum(SEC1)
+gen double SE = sqrt(SEC2)
+gen lb = 100000*(expdeath1-1.96*SE)
+gen ub = 100000*(expdeath1+1.96*SE)
+bysort cal (age) : keep if _n == 1
+noisily count if lb < 0
+keep cal stdrate lb ub
+gen country = "`c'"
+gen sex = "`ii'"
+gen OC = "`iii'"
+save STD_Rate_`i'_`ii'_`iii'_DS, replace
+}
+}
+}
+}
+foreach ii in M F {
+foreach iii in inc_t1d {
+if "`ii'" == "M" {
+local s = "Males"
+}
+else {
+local s = "Females"
+}
+if "`iii'" == "inc_t1d" {
+local oc = "Typical type 1 diabetes"
+}
+else if "`iii'" == "inc_t2d" {
+local oc = "Typical type 2 diabetes"
+}
+else {
+local oc = "Uncertain diabetes type"
+}
+local col1 = "0 0 255"
+local col2 = "75 0 130"
+local col3 = "255 0 255"
+local col4 = "255 0 0"
+local col5 = "255 125 0"
+local col6 = "0 125 0"
+local col7 = "0 0 0"
+clear
+forval i = 1/7 {
+append using STD_Rate_`i'_`ii'_`iii'_DS
+}
+replace country = "Spain (Catalonia)" if country == "Catalonia, Spain"
+preserve
+bysort country : keep if _n == 1
+forval i = 1/7 {
+local C`i' = country[`i']
+}
+restore
+if "`ii'" == "F" & "`iii'" == "inc_t2d" {
+twoway ///
+(rarea ub lb calendar if country == "`C1'", color("`col1'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C1'", color("`col1'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C2'", color("`col2'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C2'", color("`col2'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C3'", color("`col3'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C3'", color("`col3'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C4'", color("`col4'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C4'", color("`col4'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C5'", color("`col5'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C5'", color("`col5'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C6'", color("`col6'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C6'", color("`col6'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C7'", color("`col7'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C7'", color("`col7'") lpattern(solid)) ///
+, legend(symxsize(0.13cm) position(4) ring(0) region(lcolor(white) color(none)) ///
+order(2 "`C1'" ///
+4 "`C2'" ///
+6 "`C3'" ///
+8 "`C4'" ///
+10 "`C5'" ///
+12 "`C6'" ///
+14 "`C7'") ///
+cols(2)) ///
+graphregion(color(white)) ///
+ylabel(5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(5 500) log) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
+xtitle("Calendar year") ///
+title("`oc' - `s'", placement(west) color(black) size(medium))
+}
+else {
+twoway ///
+(rarea ub lb calendar if country == "`C1'", color("`col1'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C1'", color("`col1'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C2'", color("`col2'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C2'", color("`col2'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C3'", color("`col3'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C3'", color("`col3'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C4'", color("`col4'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C4'", color("`col4'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C5'", color("`col5'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C5'", color("`col5'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C6'", color("`col6'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C6'", color("`col6'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C7'", color("`col7'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C7'", color("`col7'") lpattern(solid)) ///
+, legend(off) ///
+graphregion(color(white)) ///
+ylabel(5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(5 500) log) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
+xtitle("Calendar year") ///
+title("`oc' - `s'", placement(west) color(black) size(medium))
+}
+graph save "Graph" Alive_`ii'_`iii'_STD_DS, replace
+}
+}
+foreach ii in M F {
+foreach iii in inc_t2d inc_uncertaint {
+if "`ii'" == "M" {
+local s = "Males"
+}
+else {
+local s = "Females"
+}
+if "`iii'" == "inc_t1d" {
+local oc = "Typical type 1 diabetes"
+}
+else if "`iii'" == "inc_t2d" {
+local oc = "Typical type 2 diabetes"
+}
+else {
+local oc = "Uncertain diabetes type"
+}
+local col1 = "0 0 255"
+local col2 = "75 0 130"
+local col3 = "255 0 255"
+local col4 = "255 0 0"
+local col5 = "255 125 0"
+local col6 = "0 125 0"
+local col7 = "0 175 255"
+local col8 = "0 0 0"
+clear
+forval i = 1/8 {
+append using STD_Rate_`i'_`ii'_`iii'_DS
+}
+replace country = "Spain (Catalonia)" if country == "Catalonia, Spain"
+preserve
+bysort country : keep if _n == 1
+forval i = 1/8 {
+local C`i' = country[`i']
+}
+restore
+if "`ii'" == "F" & "`iii'" == "inc_t2d" {
+twoway ///
+(rarea ub lb calendar if country == "`C1'", color("`col1'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C1'", color("`col1'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C2'", color("`col2'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C2'", color("`col2'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C3'", color("`col3'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C3'", color("`col3'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C4'", color("`col4'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C4'", color("`col4'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C5'", color("`col5'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C5'", color("`col5'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C6'", color("`col6'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C6'", color("`col6'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C7'", color("`col7'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C7'", color("`col7'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C8'", color("`col8'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C8'", color("`col8'") lpattern(solid)) ///
+, legend(symxsize(0.13cm) position(4) ring(0) region(lcolor(white) color(none)) ///
+order(2 "`C1'" ///
+4 "`C2'" ///
+6 "`C3'" ///
+8 "`C4'" ///
+10 "`C5'" ///
+12 "`C6'" ///
+14 "`C7'" ///
+16 "`C8'") ///
+cols(2)) ///
+graphregion(color(white)) ///
+ylabel(5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(5 500) log) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
+xtitle("Calendar year") ///
+title("`oc' - `s'", placement(west) color(black) size(medium))
+}
+else {
+twoway ///
+(rarea ub lb calendar if country == "`C1'", color("`col1'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C1'", color("`col1'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C2'", color("`col2'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C2'", color("`col2'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C3'", color("`col3'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C3'", color("`col3'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C4'", color("`col4'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C4'", color("`col4'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C5'", color("`col5'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C5'", color("`col5'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C6'", color("`col6'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C6'", color("`col6'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C7'", color("`col7'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C7'", color("`col7'") lpattern(solid)) ///
+(rarea ub lb calendar if country == "`C8'", color("`col8'%30") fintensity(inten80) lwidth(none)) ///
+(line stdrate calendar if country == "`C8'", color("`col8'") lpattern(solid)) ///
+, legend(off) ///
+graphregion(color(white)) ///
+ylabel(5 10 20 50 100 200 500, grid angle(0)) ///
+yscale(range(5 500) log) ///
+xscale(range(2000 2020)) ///
+xlabel(2000(5)2020, nogrid) ///
+ytitle("Incidence rate (per 100,000 person-years)", margin(a+2)) ///
+xtitle("Calendar year") ///
+title("`oc' - `s'", placement(west) color(black) size(medium))
+}
+graph save "Graph" Alive_`ii'_`iii'_STD_DS, replace
+}
+}
+texdoc stlog close
+texdoc stlog, cmdlog
+graph combine ///
+Alive_F_inc_t1d_STD_DS.gph ///
+Alive_M_inc_t1d_STD_DS.gph ///
+Alive_F_inc_t2d_STD_DS.gph ///
+Alive_M_inc_t2d_STD_DS.gph ///
+Alive_F_inc_uncertaint_STD_DS.gph ///
+Alive_M_inc_uncertaint_STD_DS.gph ///
+, altshrink rows(3) xsize(3.3) graphregion(color(white))
+texdoc graph, label(STDfigds) figure(h!) caption(Age-standardized incidence rates of diabetes for people aged 15-34 years, by diabetes type and sex. ///
+South Korea is excluded from type 1 diabetes due to insufficient numbers.)
+texdoc stlog close
+texdoc stlog, cmdlog nodo
+forval i = 1/8 {
+forval ii = 0/2 {
+forval iii = 1/4 {
+if `i' == 1 {
+local c = "Australia"
+}
+if `i' == 2 {
+local c = "Catalonia, Spain"
+}
+if `i' == 3 {
+local c = "Denmark"
+}
+if `i' == 4 {
+local c = "Finland"
+}
+if `i' == 5 {
+local c = "Hungary"
+}
+if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
+local c = "South Korea"
+}
+use dbasev9, clear
+drop if cal >= 2021
+drop if age_gp == "35-39"
+keep if country == "`c'" 
+if `ii' == 1 {
+keep if sex == "M"
+}
+if `ii' == 2 {
+keep if sex == "F"
+}
+rename age_gp age
+replace age = substr(age,1,2)
+destring age, replace
+replace age = age+2.5
+su(calendar), detail
+local lb = r(min)
+local ub = r(max)
+replace calendar = calendar-2009.5
+gen coh = calendar-age
+centile(age), centile(5 35 65 95)
+local A1 = r(c_1)
+local A2 = r(c_2)
+local A3 = r(c_3)
+local A4 = r(c_4)
+mkspline agesp = age, cubic knots(`A1' `A2' `A3' `A4')
+if `iii' == 1 {
+poisson inc_t1d calendar agesp*, exposure(pys)
+}
+if `iii' == 2 {
+poisson inc_t2d calendar agesp*, exposure(pys)
+}
+if `iii' == 3 {
+poisson inc_uncertaint calendar agesp*, exposure(pys)
+}
+if `iii' == 4 {
+gen totinc = inc_t1d+inc_t2d+inc_uncertaint
+poisson totinc calendar agesp*, exposure(pys)
+}
+matrix A_`i'_`ii'_`iii' = (`lb',`ub',`i',`ii',`iii',r(table)[1,1], r(table)[5,1], r(table)[6,1])
+}
+}
+matrix A_`i' = (A_`i'_0_1,A_`i'_0_2,A_`i'_0_3,A_`i'_0_4\ ///
+A_`i'_1_1,A_`i'_1_2,A_`i'_1_3,A_`i'_1_4\ ///
+A_`i'_2_1,A_`i'_2_2,A_`i'_2_3,A_`i'_2_4)
+}
+matrix A = (A_1\A_2\A_3\A_4\A_5\A_6\A_7\A_8)
+clear
+svmat A
+gen country=""
+bysort A3 (A2) : replace country = "Australia" if A3 == 1 & _n == 1
+bysort A3 (A2) : replace country = "Spain (Catalonia)" if A3 == 2 & _n == 1
+bysort A3 (A2) : replace country = "Denmark" if A3 == 3 & _n == 1
+bysort A3 (A2) : replace country = "Finland" if A3 == 4 & _n == 1
+bysort A3 (A2) : replace country = "Hungary" if A3 == 5 & _n == 1
+bysort A3 (A2) : replace country = "Japan" if A3 == 6 & _n == 1
+bysort A3 (A2) : replace country = "Scotland" if A3 == 7 & _n == 1
+bysort A3 (A2) : replace country = "South Korea" if A3 == 8 & _n == 1
+tostring A1 A2, replace format(%9.0f)
+bysort A3 (A2) : gen time = A1+"-"+A2 if _n == 1
+gen sex = "Overall" if A4 == 0
+replace sex = "Males" if A4 == 1
+replace sex = "Females" if A4 == 2
+drop A9-A13 A17-A21 A25-A29
+foreach var of varlist A6-A32 {
+replace `var' = 100*(exp(`var')-1)
+}
+tostring A6-A32, replace force format(%9.1f)
+gen T1 = "$" + A6 + "$ ($" + A7 + "$, $" + A8 + "$)"
+gen T2 = "$" + A14 + "$ ($" + A15 + "$, $" + A16 + "$)"
+gen T3 = "$" + A22 + "$ ($" + A23 + "$, $" + A24 + "$)"
+gen T4 = "$" + A30 + "$ ($" + A31 + "$, $" + A32 + "$)"
+gen njm = _n
+gen nj =0
+replace nj = 1 if _n == 4 | _n == 5 | _n == 6
+sort nj njm
+keep country time sex T1 T2 T3 T4
+export delimited using APCs_DS.csv, delimiter(":") novarnames replace
+texdoc stlog close
+
+/***
+\color{black}
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.
+Analysis restricted to ages 15-34.}
+    \label{APCs}
+     \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
+      multicolumn names,
+      col sep=colon,
+      header=false,
+      string type,
+	  display columns/0/.style={column name=Country,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+	  display columns/1/.style={column name=Period,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+      display columns/2/.style={column name=Sex, column type={l}, text indicator="},
+      display columns/3/.style={column name=Typical type 1 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/4/.style={column name=Typical type 2 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/5/.style={column name=Uncertain diabetes type, column type={r}, column type/.add={|}{|}},
+      display columns/6/.style={column name=Total diabetes, column type={r}, column type/.add={}{|}},
+      every head row/.style={
+        before row={\toprule
+					},
+        after row={\midrule}
+            },
+        every nth row={3}{before row=\midrule},
+        every last row/.style={after row=\bottomrule},
+    ]{APCs_DS.csv}
+  \end{center}
+\end{table}
 
 
 \clearpage
@@ -1913,12 +2740,49 @@ texdoc stlog close
 
 texdoc close
 
-*import delimited using QA.csv, delimiter(":") clear 
-*label variable ass "Definition of diabetes"
-*Other changes
-*export excel myfile,  firstrow(varlabels) replace
-*import excel myfile.xls, clear
-*export delimited QA2, novarnames delimiter(":") replace
+/*
+
+import delimited using QA.csv, delimiter(":") clear 
+label variable ass "Definition of diabetes"
+Other changes
+export excel myfile,  firstrow(varlabels) replace
+import excel myfile.xls, clear
+export delimited QA2, novarnames delimiter(":") replace
+
+import delimited using CI.csv, delimiter(":") clear 
+replace v6 = v6*100
+replace v8 = v8*100
+replace v10 = v10*100
+tostring v6 v8 v10, force format(%9.0f) replace
+export delimited CI2, novarnames delimiter(":") replace
+
+import delimited using CI2.csv, delimiter(":") clear
+replace v4 = subinstr(v4,",","",.)
+replace v5 = subinstr(v5,",","",.)
+replace v7 = subinstr(v7,",","",.)
+replace v9 = subinstr(v9,",","",.)
+
+destring v4 v5 v7 v9, replace
+
+foreach i in 5 7 9 {
+local j = `i'+1
+gen inc = 100000*v`i'/v4
+gen se = sqrt((1-(v`i'/v4))/v`i')
+gen lb = 100000*exp(ln(v`i'/v4)-1.96*se)
+gen ub = 100000*exp(ln(v`i'/v4)+1.96*se)
+tostring v`j', replace
+tostring inc lb ub, format(%9.1f) replace force
+replace v`j' = inc + " (" + lb + ", " + ub + ")"
+drop inc-ub
+}
+
+
+tostring v4 v5 v7 v9, replace force format(%15.0fc)
+export delimited CI3, novarnames delimiter(":") replace
+
+
+
+*/
 
 
 texdoc init YO_SA, replace logdir(logsa) gropts(optargs(width=0.8\textwidth))
@@ -1965,36 +2829,26 @@ Appendix}
         \Large
 
 \noindent
-Jedidiah Morton \\
-\color{blue}
-\href{mailto:Jedidiah.Morton@Monash.edu}{Jedidiah.Morton@monash.edu} \\ 
-\color{black}
-Research Fellow \\
-\color{blue}
-\color{black}
-Monash University, Melbourne, Australia \\\
-Baker Heart and Diabetes Institute, Melbourne, Australia \\
-\\
-\noindent
-Lei Chen \\
-Research Officer \\
-Baker Heart and Diabetes Institute, Melbourne, Australia \\
-\\
-\noindent
-Bendix Carstensen \\
-Senior Statistician \\
-Steno Diabetes Center Copenhagen, Herlev, Denmark \\
-Department of Biostatistics, University of Copenhagen \\
-\\
-\noindent
-Agus Salim \\
-Chief Biostatician \\
-Baker Heart and Diabetes Institute, Melbourne, Australia \\
-\\
-\noindent
-Dianna Magliano \\
-Professor and Head of Diabetes and Population Health \\
-Baker Heart and Diabetes Institute, Melbourne, Australia \\
+Dianna J Magliano,
+Lei Chen,
+Jedidiah I Morton,
+Agus Salim,
+Bendix Carstensen,
+Edward W Gregg,
+Meda E Pavkov,
+Martti Arffman,
+Helen M Colhoun,
+Kyoung Hwa Ha,
+Tomoaki Imamura,
+Gy{\"o}rgy Jermendy,
+Dae Jung Kim,
+Zolt{\'a}n Kiss,
+Didac Mauricio,
+Stuart McGurnaghan,
+Yuichi Nishioka,
+Sarah H Wild, 
+Klas Winell, and
+Jonathan E Shaw.
 
 \end{titlepage}
 
@@ -2006,7 +2860,7 @@ Baker Heart and Diabetes Institute, Melbourne, Australia \\
 
 \clearpage
 \section{Quality score algorithm}
-We used a modified Newcastle-Ottawa Quality Assessment Scale.
+We used an adapted Newcastle-Ottawa Quality Assessment Scale.
 The scale includes items that assess representativeness of the data sources, 
 sample size at each time point, the method of defining diabetes, 
 whether people with gestational diabetes were excluded, 
@@ -2116,6 +2970,52 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
   \end{center}
 \end{table}
 
+\end{landscape}
+
+\begin{table}[]
+\centering
+    \caption{Summary of how people with gestational diabetes were excluded in each data source}
+\begin{tabular}{p{5cm}p{11cm}}
+\hline
+Jurisdiction & Reasons for exclusion of gestational diabetes \\
+\hline
+Australia & Gestational diabetes was recorded as a reason for the diagnosis of diabetes in the NDSS. \\
+Denmark	& Diagnoses of gestational diabetes (GDM) that occur within 200 days of a previous GDM diagnosis 
+are disregarded to ensure that each diagnosis represents a distinct pregnancy. 
+For each woman, starting from the first GDM diagnosis, no subsequent 
+GDM diagnosis within the next 200 days is considered. This method isolates the 
+earliest GDM diagnosis for each pregnancy. Additionally, if a woman is diagnosed 
+with GDM in the National Patient Register (NPR), she is excluded from entering 
+the register on any other criterion from 280 days before to 280 days after the 
+GDM diagnosis, ensuring the exclusion of any potential pregnancy-related period 
+and being conservatively thorough. \\
+Finland & The database separates individuals with gestational diabetes 
+by searching for specific diagnosis codes across multiple healthcare registers, 
+including the Hospital Discharge Register, Care Register for Health Care, 
+Register of Primary Health Care Visits, and Cause of Death statistics. 
+Any entry in the Medical Birth Register for gestational diabetes also qualifies. 
+Individuals were classified as having gestational diabetes if no other 
+diabetes diagnoses were found. For diagnoses before 1987, pregnancy and 
+postpartum periods were calculated and compared with diabetes diagnosis dates. 
+Similarly, post-1987 deliveries were checked against antidiabetic medication purchases. 
+If diabetes diagnoses or medication purchases were limited to the pregnancy and 
+postpartum period, the individual was classified as having gestational diabetes. 
+This classification allows the FinDM database to be used for research on gestational diabetes. \\
+Hungary & Gestational diabetes was identified using ICD-10 code of O244. \\
+Japan & Gestational diabetes was identified using ICD-10 codes of O244 and O249. \\
+Scotland & Gestational diabetes was recorded as a reason for the diagnosis of diabetes in the clinical record.  \\
+South Korea & Gestational diabetes was identified using ICD-10 codes.  \\
+Spain (Catalonia) & Only people with ICD-10 codes of E10 or E11 in the clinical records were included.  \\
+\hline
+\end{tabular}
+\end{table}
+
+
+
+\begin{landscape}
+
+\pagenumbering{gobble}
+
 \begin{table}[h!]
   \begin{center}
     \caption{Crude incidence rate of diagnosed diabetes for people aged 15-39 years, by jurisdiction}
@@ -2137,11 +3037,11 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
       display columns/2/.style={column name=Sex, column type={l}, text indicator="},
       display columns/3/.style={column name=\specialcell{Person-years \\ of follow-up}, column type={r}},
       display columns/4/.style={column name=Incident cases, column type={r}},
-      display columns/5/.style={column name=\specialcell{{Crude incidence} \\ {(per 1,000 person-years)}}, column type={r}},
+      display columns/5/.style={column name=\specialcell{{Crude incidence} \\ {(per 100,000 person-years)}}, column type={r}},
       display columns/6/.style={column name=Incident cases, column type={r}},
-      display columns/7/.style={column name=\specialcell{{Crude incidence} \\ {(per 1,000 person-years)}}, column type={r}},
+      display columns/7/.style={column name=\specialcell{{Crude incidence} \\ {(per 100,000 person-years)}}, column type={r}},
       display columns/8/.style={column name=Incident cases, column type={r}},
-      display columns/9/.style={column name=\specialcell{{Crude incidence} \\ {(per 1,000 person-years)}}, column type={r}},
+      display columns/9/.style={column name=\specialcell{{Crude incidence} \\ {(per 100,000 person-years)}}, column type={r}},
       every head row/.style={
         before row={\toprule
 					& & & & \multicolumn{2}{c}{Typical type 1 diabetes} & \multicolumn{2}{c}{Typical type 2 diabetes} & \multicolumn{2}{c}{Uncertain diabetes type} \\
@@ -2150,11 +3050,16 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
             },
         every nth row={3}{before row=\midrule},
         every last row/.style={after row=\bottomrule},
-    ]{CI.csv}
+    ]{CI3.csv}
   \end{center}
 \end{table}
 
 \end{landscape}
+
+
+\pagenumbering{arabic}
+\setcounter{page}{8}
+
 
 \begin{table}[h!]
   \begin{center}
@@ -2171,7 +3076,7 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
       display columns/3/.style={column name=\specialcell{25-29 \\ years}, column type={r}},
       display columns/4/.style={column name=\specialcell{30-34 \\ years}, column type={r}},
       display columns/5/.style={column name=\specialcell{35-39 \\ years}, column type={r}},
-      display columns/6/.style={column name=\specialcell{15-19 \\ years}, column type={r}},
+      display columns/6/.style={column name=\specialcell{15-19 \\ years}, column type={r}, column type/.add={|}{}},
       display columns/7/.style={column name=\specialcell{20-24 \\ years}, column type={r}},
       display columns/8/.style={column name=\specialcell{25-29 \\ years}, column type={r}},
       display columns/9/.style={column name=\specialcell{30-34 \\ years}, column type={r}},
@@ -2179,6 +3084,7 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
       every head row/.style={
         before row={\toprule
 					& \multicolumn{5}{c}{People with incident diabetes (\%)} & \multicolumn{5}{c}{People without diabetes (\%)} \\
+					\cmidrule{2-11}
 					},
         after row={\midrule}
             },
@@ -2230,9 +3136,9 @@ texdoc stlog, nolog
 use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country calendar_yr)
-gen inc1 = 1000*inc_t1d/pys_nondm
-gen inc2 = 1000*inc_t2d/pys_nondm
-gen inc3 = 1000*inc_unc/pys_nondm
+gen inc1 = 100000*inc_t1d/pys_nondm
+gen inc2 = 100000*inc_t2d/pys_nondm
+gen inc3 = 100000*inc_unc/pys_nondm
 foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
@@ -2271,9 +3177,9 @@ order(1 "Typical type 1 diabetes" ///
 rows(3)) ///
 graphregion(color(white)) ///
 xlabel(2000(5)2020) ///
-ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
-yscale(log range(0.05 6)) ///
-ytitle("Incidence rate (per 1,000 person-years)") ///
+ylabel(1 2 5 10 20 50 100 500, angle(0) format(%9.0f)) ///
+yscale(log range(1 500)) ///
+ytitle("Incidence rate (per 100,000 person-years)") ///
 xtitle("Calendar year") ///
 title("`co'", placement(west) color(gs0) size(medium))
 texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type)
@@ -2281,9 +3187,9 @@ texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabet
 use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar_yr)
-gen inc1 = 1000*inc_t1d/pys_nondm
-gen inc2 = 1000*inc_t2d/pys_nondm
-gen inc3 = 1000*inc_unc/pys_nondm
+gen inc1 = 100000*inc_t1d/pys_nondm
+gen inc2 = 100000*inc_t2d/pys_nondm
+gen inc3 = 100000*inc_unc/pys_nondm
 foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
@@ -2325,9 +3231,9 @@ order(1 "Typical type 1 diabetes" ///
 rows(3)) ///
 graphregion(color(white)) ///
 xlabel(2000(5)2020) ///
-ylabel(0.1 0.2 0.5 1 2 5, angle(0) format(%9.1f)) ///
-yscale(log range(0.05 6)) ///
-ytitle("Incidence rate (per 1,000 person-years)") ///
+ylabel(0.5 "0.5" 1 2 5 10 20 50 100 200 500, angle(0)) ///
+yscale(log range(0.49 500)) ///
+ytitle("Incidence rate (per 100,000 person-years)") ///
 xtitle("Calendar year") ///
 title("`co'", placement(west) color(gs0) size(medium))
 texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.)
@@ -2508,3 +3414,126 @@ texdoc stlog close
 
 texdoc close
 
+/*
+
+*mkdir gof
+
+
+forval i = 1/8 {
+foreach ii in M F {
+foreach iii in inc_t1d inc_t2d inc_uncertaint {
+if `i' == 1 {
+local c = "Australia"
+}
+if `i' == 2 {
+local c = "Catalonia, Spain"
+}
+if `i' == 3 {
+local c = "Denmark"
+}
+if `i' == 4 {
+local c = "Finland"
+}
+if `i' == 5 {
+local c = "Hungary"
+}
+if `i' == 6 {
+local c = "Japan"
+}
+if `i' == 7 {
+local c = "Scotland"
+}
+if `i' == 8 {
+local c = "South Korea"
+}
+use dbasev9, clear
+drop if cal >= 2021
+if "`iii'" == "inc_t1d" {
+drop if age_gp == "35-39"
+}
+keep if country == "`c'" & sex == "`ii'"
+rename age_gp age
+replace age = substr(age,1,2)
+destring age, replace
+replace age = age+2.5
+replace calendar = calendar-2009.5
+gen coh = calendar-age
+centile(age), centile(5 35 65 95)
+local A1 = r(c_1)
+local A2 = r(c_2)
+local A3 = r(c_3)
+local A4 = r(c_4)
+mkspline agesp = age, cubic knots(`A1' `A2' `A3' `A4')
+su(calendar), detail
+local rang = r(max)-r(min)
+if `rang' < 8 {
+centile calendar, centile(25 75)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2')
+}
+else if inrange(`rang',8,11.9) {
+centile calendar, centile(10 50 90)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3')
+}
+else if inrange(`rang',12,15.9) {
+centile calendar, centile(5 35 65 95)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+local CK4 = r(c_4)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4')
+}
+else {
+centile calendar, centile(5 27.5 50 72.5 95)
+local CK1 = r(c_1)
+local CK2 = r(c_2)
+local CK3 = r(c_3)
+local CK4 = r(c_4)
+local CK5 = r(c_5)
+mkspline timesp = calendar, cubic knots(`CK1' `CK2' `CK3' `CK4' `CK5')
+}
+centile(coh), centile(5 35 65 95)
+local CO1 = r(c_1)
+local CO2 = r(c_2)
+local CO3 = r(c_3)
+local CO4 = r(c_4)
+mkspline cohsp = coh, cubic knots(`CO1' `CO2' `CO3' `CO4')
+poisson `iii' agesp* timesp* cohsp*, exposure(pys)
+estat gof
+clear
+set obs 1
+gen v1 = "`c'"
+gen v2 = "`ii'"
+gen v3 = "`iii'"
+gen dgof = r(chi2_d)
+gen df = r(df)
+save gof/gof_`i'_`ii'_`iii', replace
+}
+}
+}
+clear
+forval i = 1/8 {
+foreach ii in M F {
+foreach iii in inc_t1d inc_t2d inc_uncertaint {
+append using gof/gof_`i'_`ii'_`iii'
+
+}
+}
+}
+gen rat = dgof/df
+format dgof rat %9.2f
+replace v2 = "Females" if v2 == "F"
+replace v2 = "Males" if v2 == "M"
+replace v3 = "Type 1 diabetes" if v3 == "inc_t1d"
+replace v3 = "Type 2 diabetes" if v3 == "inc_t2d"
+replace v3 = "Uncertain diabetes type" if v3 == "inc_uncertaint"
+
+
+su rat, detail
+
+
+*/
