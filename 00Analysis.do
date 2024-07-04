@@ -36,10 +36,12 @@ set linesize 100
     \begin{flushright}
         \Huge
         \textbf{Trends in incidence of young-onset diabetes by diabetes type: 
-a multi-national population-based study \\
-Protocol}
+a multi-national population-based study}
 \color{black}
 \rule{16cm}{2mm} \\
+\vspace{0.3cm}
+\textbf{Protocol} \\
+\vspace{0.3cm}
 \Large
 \color{black}
 \thedate \\
@@ -165,8 +167,17 @@ use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country calendar_yr)
 gen inc1 = 100000*inc_t1d/pys_nondm
+gen se1 = sqrt((1-(inc_t1d/pys_nondm))/inc_t1d)
+gen lb1 = 100000*exp(ln(inc_t1d/pys_nondm)-1.96*se1)
+gen ub1 = 100000*exp(ln(inc_t1d/pys_nondm)+1.96*se1)
 gen inc2 = 100000*inc_t2d/pys_nondm
+gen se2 = sqrt((1-(inc_t2d/pys_nondm))/inc_t2d)
+gen lb2 = 100000*exp(ln(inc_t2d/pys_nondm)-1.96*se2)
+gen ub2 = 100000*exp(ln(inc_t2d/pys_nondm)+1.96*se2)
 gen inc3 = 100000*inc_unc/pys_nondm
+gen se3 = sqrt((1-(inc_unc/pys_nondm))/inc_unc)
+gen lb3 = 100000*exp(ln(inc_unc/pys_nondm)-1.96*se3)
+gen ub3 = 100000*exp(ln(inc_unc/pys_nondm)+1.96*se3)
 foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
@@ -198,6 +209,9 @@ twoway ///
 (line inc1 calendar if country == "`c'", color(dknavy)) ///
 (line inc2 calendar if country == "`c'", color(cranberry)) ///
 (line inc3 calendar if country == "`c'", color(magenta)) ///
+(rarea ub1 lb1 calendar if country == "`c'", color(dknavy%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub2 lb2 calendar if country == "`c'", color(cranberry%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub3 lb3 calendar if country == "`c'", color(magenta%30) fintensity(inten80) lwidth(none)) ///
 , legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
 order(1 "Typical type 1 diabetes" ///
 2 "Typical type 2 diabetes" ///
@@ -205,19 +219,28 @@ order(1 "Typical type 1 diabetes" ///
 rows(3)) ///
 graphregion(color(white)) ///
 xlabel(2000(5)2020) ///
-ylabel(1 2 5 10 20 50 100 500, angle(0) format(%9.0f)) ///
-yscale(log range(1 500)) ///
+ylabel(0.5 "0.5" 1 2 5 10 20 50 100 500, angle(0) format(%9.0f)) ///
+yscale(log range(0.5 500)) ///
 ytitle("Incidence rate (per 100,000 person-years)") ///
 xtitle("Calendar year") ///
 title("`co'", placement(west) color(gs0) size(medium))
-texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type)
+texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type. Shaded areas represent 95\% confidence intervals.)
 }
 use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar_yr)
 gen inc1 = 100000*inc_t1d/pys_nondm
+gen se1 = sqrt((1-(inc_t1d/pys_nondm))/inc_t1d)
+gen lb1 = 100000*exp(ln(inc_t1d/pys_nondm)-1.96*se1)
+gen ub1 = 100000*exp(ln(inc_t1d/pys_nondm)+1.96*se1)
 gen inc2 = 100000*inc_t2d/pys_nondm
+gen se2 = sqrt((1-(inc_t2d/pys_nondm))/inc_t2d)
+gen lb2 = 100000*exp(ln(inc_t2d/pys_nondm)-1.96*se2)
+gen ub2 = 100000*exp(ln(inc_t2d/pys_nondm)+1.96*se2)
 gen inc3 = 100000*inc_unc/pys_nondm
+gen se3 = sqrt((1-(inc_unc/pys_nondm))/inc_unc)
+gen lb3 = 100000*exp(ln(inc_unc/pys_nondm)-1.96*se3)
+gen ub3 = 100000*exp(ln(inc_unc/pys_nondm)+1.96*se3)
 foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
@@ -252,6 +275,12 @@ twoway ///
 (line inc2 calendar if country == "`c'" & sex == "M", color(cranberry) lpattern(shortdash)) ///
 (line inc3 calendar if country == "`c'" & sex == "F", color(magenta)) ///
 (line inc3 calendar if country == "`c'" & sex == "M", color(magenta) lpattern(shortdash)) ///
+(rarea ub1 lb1 calendar if country == "`c'" & sex == "F", color(dknavy%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub2 lb2 calendar if country == "`c'" & sex == "F", color(cranberry%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub3 lb3 calendar if country == "`c'" & sex == "F", color(magenta%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub1 lb1 calendar if country == "`c'" & sex == "M", color(dknavy%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub2 lb2 calendar if country == "`c'" & sex == "M", color(cranberry%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub3 lb3 calendar if country == "`c'" & sex == "M", color(magenta%30) fintensity(inten80) lwidth(none)) ///
 , legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
 order(1 "Typical type 1 diabetes" ///
 3 "Typical type 2 diabetes" ///
@@ -259,12 +288,12 @@ order(1 "Typical type 1 diabetes" ///
 rows(3)) ///
 graphregion(color(white)) ///
 xlabel(2000(5)2020) ///
-ylabel(0.5 "0.5" 1 2 5 10 20 50 100 200 500, angle(0)) ///
-yscale(log range(0.49 500)) ///
+ylabel(0.05 "0.05" 0.1 "0.1" 0.2 "0.2" 0.5 "0.5" 1 2 5 10 20 50 100 200 500, angle(0)) ///
+yscale(log range(0.05 500)) ///
 ytitle("Incidence rate (per 100,000 person-years)") ///
 xtitle("Calendar year") ///
 title("`co'", placement(west) color(gs0) size(medium))
-texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.)
+texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines. Shaded areas represent 95\% confidence intervals.)
 }
 texdoc stlog close
 
@@ -633,7 +662,7 @@ Escape_`i'_M_inc_t2d.gph ///
 Escape_`i'_F_inc_uncertaint.gph ///
 Escape_`i'_M_inc_uncertaint.gph ///
 , altshrink rows(3) xsize(3.5) graphregion(color(white))
-texdoc graph, label(`c' agespec) figure(h!) caption(Incidence rates of diabetes in `co' for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex)
+texdoc graph, label(`c' agespec) figure(h!) caption(Incidence rates of diabetes in `co' for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex. Shaded areas represent 95\% confidence intervals.)
 graph combine ///
 TTFATF_`i'_F_inc_t1d.gph ///
 TTFATF_`i'_M_inc_t1d.gph ///
@@ -642,7 +671,7 @@ TTFATF_`i'_M_inc_t2d.gph ///
 TTFATF_`i'_F_inc_uncertaint.gph ///
 TTFATF_`i'_M_inc_uncertaint.gph ///
 , altshrink rows(3) xsize(3.5) graphregion(color(white))
-texdoc graph, label(`c' agespec) figure(h!) caption(Incidence rates of diabetes in `co' by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex)
+texdoc graph, label(`c' agespec) figure(h!) caption(Incidence rates of diabetes in `co' by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex. Shaded areas represent 95\% confidence intervals.)
 }
 texdoc stlog close
 
@@ -747,7 +776,7 @@ Alive_M_inc_t2d_20.gph ///
 Alive_F_inc_uncertaint_20.gph ///
 Alive_M_inc_uncertaint_20.gph ///
 , altshrink rows(3) xsize(4) graphregion(color(white))
-texdoc graph, label(agespec20) figure(h!) caption(Incidence rates of diabetes for people aged 20 years, by diabetes type and sex)
+texdoc graph, label(agespec20) figure(h!) caption(Incidence rates of diabetes for people aged 20 years, by diabetes type and sex. Shaded areas represent 95\% confidence intervals.)
 graph combine ///
 Alive_F_inc_t1d_25.gph ///
 Alive_M_inc_t1d_25.gph ///
@@ -756,7 +785,7 @@ Alive_M_inc_t2d_25.gph ///
 Alive_F_inc_uncertaint_25.gph ///
 Alive_M_inc_uncertaint_25.gph ///
 , altshrink rows(3) xsize(4) graphregion(color(white))
-texdoc graph, label(agespec25) figure(h!) caption(Incidence rates of diabetes for people aged 25 years, by diabetes type and sex)
+texdoc graph, label(agespec25) figure(h!) caption(Incidence rates of diabetes for people aged 25 years, by diabetes type and sex. Shaded areas represent 95\% confidence intervals.)
 graph combine ///
 Alive_F_inc_t1d_30.gph ///
 Alive_M_inc_t1d_30.gph ///
@@ -765,7 +794,7 @@ Alive_M_inc_t2d_30.gph ///
 Alive_F_inc_uncertaint_30.gph ///
 Alive_M_inc_uncertaint_30.gph ///
 , altshrink rows(3) xsize(4) graphregion(color(white))
-texdoc graph, label(agespec30) figure(h!) caption(Incidence rates of diabetes for people aged 30 years, by diabetes type and sex)
+texdoc graph, label(agespec30) figure(h!) caption(Incidence rates of diabetes for people aged 30 years, by diabetes type and sex. Shaded areas represent 95\% confidence intervals.)
 texdoc stlog close
 
 /***
@@ -1005,7 +1034,7 @@ ylabel( ///
 yscale(range(0.02 30) log) ///
 xlabel(15(5)35, nogrid) ///
 ytitle("Incidence rate ratio T2D:T1D", margin(a+2)) ///
-xtitle("Age") yline(1, lcol(black)) ///
+xtitle("Age (years)") yline(1, lcol(black)) ///
 title("`iii'", placement(west) color(black) size(medium))
 graph save "Graph" Possession_`ii', replace
 }
@@ -1016,7 +1045,7 @@ Possession_F.gph ///
 Possession_M.gph ///
 , altshrink rows(1) xsize(10) graphregion(color(white))
 texdoc graph, label(smr111) figure(h!) caption(Incidence rate ratio for typical type 2 diabetes (T2D) vs. typical type 1 diabetes (T1D), ///
-by sex in 2017. South Korea is excluded due to insufficient numbers in type 1 diabetes.)
+by sex in 2017. South Korea is excluded due to insufficient numbers in type 1 diabetes. Shaded areas represent 95\% confidence intervals.)
 graph export "/Users/jed/Documents/YO/Figure 3.pdf", as(pdf) name("Graph") replace
 texdoc stlog close
 
@@ -1061,7 +1090,7 @@ order(1 "Actual" ///
 cols(1)) ///
 graphregion(color(white)) ///
 ylabel(1.2(0.1)1.5, format(%9.1f) angle(0)) ///
-ytitle("Population size (millions)") xtitle("Age")
+ytitle("Population size (millions)") xtitle("Age (years)")
 texdoc graph, label(ESP2010N) figure(h!) caption(European standard population in 2010)
 restore
 su(esp2010)
@@ -1077,7 +1106,7 @@ order(1 "Actual" ///
 cols(1)) /// 
 ylabel(0(0.01)0.04, angle(0) format(%9.2f)) ///
 graphregion(color(white)) ///
-ytitle("Proportion") xtitle("Age")
+ytitle("Proportion") xtitle("Age (years)")
 texdoc graph, label(ESP2010P) figure(h!) caption(European standard population proportions in 2010)
 keep age B
 replace age = age-0.5
@@ -1469,7 +1498,7 @@ Alive_F_inc_uncertaint_STD.gph ///
 Alive_M_inc_uncertaint_STD.gph ///
 , altshrink rows(3) xsize(3.3) graphregion(color(white))
 texdoc graph, label(STDfig) figure(h!) caption(Age-standardized incidence rates of diabetes for people aged 15-39 years, by diabetes type and sex. ///
-South Korea is excluded from type 1 diabetes due to insufficent numbers.)
+South Korea is excluded from type 1 diabetes due to insufficent numbers. Shaded areas represent 95\% confidence intervals.)
 graph export "/Users/jed/Documents/YO/Figure 1.pdf", as(pdf) name("Graph") replace
 texdoc stlog close
 
@@ -1602,7 +1631,7 @@ texdoc stlog close
 
 \begin{table}[h!]
   \begin{center}
-    \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.}
+    \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age. Numbers in brackets represent 95\% confidence intervals.}
     \label{APCs}
      \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
       multicolumn names,
@@ -1822,7 +1851,7 @@ Apage_`i'_inc_uncertaint_2.gph ///
 texdoc graph, label(`c' apcageg) figure(h!) caption(Annual change in the incidence rates of diabetes in `co' by age, by diabetes type and sex. ///
 Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction ///
 between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of ///
-age and calendar time in the interaction.)
+age and calendar time in the interaction. Shaded areas represent 95\% confidence intervals.)
 }
 texdoc stlog close
 
@@ -1840,8 +1869,6 @@ texdoc stlog close
 In this sensitivity analysis, we will re-allocated people in the uncertain diabetes type category
 to either type 1 diabetes or type 2 diabetes, and assess the impact this has on age-adjusted trends 
 and changes over time. 
-
-
 
 \color{Blue4}
 ***/
@@ -2096,7 +2123,7 @@ Alive_F_inc_t2d_STD_US.gph ///
 Alive_M_inc_t2d_STD_US.gph ///
 , altshrink rows(2) xsize(5) graphregion(color(white))
 texdoc graph, label(STDfigus) figure(h!) caption(Age-standardized incidence rates of diabetes for people aged 15-39 years, by diabetes type and sex. ///
-Includes all uncertain diabetes cases as either type 1 or type 2 diabetes.)
+Includes all uncertain diabetes cases as either type 1 or type 2 diabetes. Shaded areas represent 95\% confidence intervals.)
 texdoc stlog close
 texdoc stlog, cmdlog nodo
 forval i = 1/8 {
@@ -2206,7 +2233,7 @@ texdoc stlog close
 \begin{table}[h!]
   \begin{center}
     \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.
-Includes all uncertain diabetes cases as either type 1 or type 2 diabetes}
+Includes all uncertain diabetes cases as either type 1 or type 2 diabetes. Numbers in brackets represent 95\% confidence intervals.}
     \label{APCs}
      \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
       multicolumn names,
@@ -2584,7 +2611,7 @@ Alive_F_inc_uncertaint_STD_DS.gph ///
 Alive_M_inc_uncertaint_STD_DS.gph ///
 , altshrink rows(3) xsize(3.3) graphregion(color(white))
 texdoc graph, label(STDfigds) figure(h!) caption(Age-standardized incidence rates of diabetes for people aged 15-34 years, by diabetes type and sex. ///
-South Korea is excluded from type 1 diabetes due to insufficient numbers.)
+South Korea is excluded from type 1 diabetes due to insufficient numbers. Shaded areas represent 95\% confidence intervals.)
 texdoc stlog close
 texdoc stlog, cmdlog nodo
 forval i = 1/8 {
@@ -2699,7 +2726,7 @@ texdoc stlog close
 \begin{table}[h!]
   \begin{center}
     \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.
-Analysis restricted to ages 15-34.}
+Analysis restricted to ages 15-34. Numbers in brackets represent 95\% confidence intervals.}
     \label{APCs}
      \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
       multicolumn names,
@@ -2820,9 +2847,10 @@ set linesize 100
     \begin{flushright}
         \Huge
         \textbf{Trends in incidence of young-onset diabetes by diabetes type: 
-a multi-national population-based study \\
-Appendix}
-\rule{16cm}{2mm} \\
+a multi-national population-based study}
+\rule{16cm}{1.5mm} \\
+\vspace{0.3cm}
+\textbf{Appendix}
 \Large
        \vfill
     \end{flushright}
@@ -2865,7 +2893,7 @@ The scale includes items that assess representativeness of the data sources,
 sample size at each time point, the method of defining diabetes, 
 whether people with gestational diabetes were excluded, 
 and completeness of the number of data points reported. 
-The maximum score was 8. Risk of bias was classified as high (7–8), 
+The maximum score was 8. Quality was classified as high (7–8), 
 medium (5–6), or low ($\leq$4). 
 A study can be awarded a maximum of one or 
 two points for each numbered item within each category.
@@ -2974,38 +3002,27 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
 
 \begin{table}[]
 \centering
-    \caption{Summary of how people with gestational diabetes were excluded in each data source}
+    \caption{A summary of how people with gestational diabetes were excluded in each data source}
 \begin{tabular}{p{5cm}p{11cm}}
 \hline
-Jurisdiction & Reasons for exclusion of gestational diabetes \\
+Jurisdiction & Method of exclusion of gestational diabetes \\
 \hline
-Australia & Gestational diabetes was recorded as a reason for the diagnosis of diabetes in the NDSS. \\
-Denmark	& Diagnoses of gestational diabetes (GDM) that occur within 200 days of a previous GDM diagnosis 
-are disregarded to ensure that each diagnosis represents a distinct pregnancy. 
-For each woman, starting from the first GDM diagnosis, no subsequent 
-GDM diagnosis within the next 200 days is considered. This method isolates the 
-earliest GDM diagnosis for each pregnancy. Additionally, if a woman is diagnosed 
-with GDM in the National Patient Register (NPR), she is excluded from entering 
-the register on any other criterion from 280 days before to 280 days after the 
-GDM diagnosis, ensuring the exclusion of any potential pregnancy-related period 
-and being conservatively thorough. \\
-Finland & The database separates individuals with gestational diabetes 
-by searching for specific diagnosis codes across multiple healthcare registers, 
-including the Hospital Discharge Register, Care Register for Health Care, 
-Register of Primary Health Care Visits, and Cause of Death statistics. 
-Any entry in the Medical Birth Register for gestational diabetes also qualifies. 
-Individuals were classified as having gestational diabetes if no other 
-diabetes diagnoses were found. For diagnoses before 1987, pregnancy and 
-postpartum periods were calculated and compared with diabetes diagnosis dates. 
-Similarly, post-1987 deliveries were checked against antidiabetic medication purchases. 
-If diabetes diagnoses or medication purchases were limited to the pregnancy and 
-postpartum period, the individual was classified as having gestational diabetes. 
-This classification allows the FinDM database to be used for research on gestational diabetes. \\
-Hungary & Gestational diabetes was identified using ICD-10 code of O244. \\
-Japan & Gestational diabetes was identified using ICD-10 codes of O244 and O249. \\
-Scotland & Gestational diabetes was recorded as a reason for the diagnosis of diabetes in the clinical record.  \\
-South Korea & Gestational diabetes was identified using ICD-10 codes.  \\
-Spain (Catalonia) & Only people with ICD-10 codes of E10 or E11 in the clinical records were included.  \\
+Australia &
+The presence or absence of gestational diabetes is recorded by the registering clinician for each registrant. \\
+Denmark &
+If a woman is diagnosed with GDM in the National Patient Register (NPR), she is excluded from entering the diabetes register on any other criterion from 280 days before to 280 days after the GDM diagnosis, ensuring the exclusion of any potential pregnancy-related period and being conservatively thorough. \\
+Finland &
+The database separates individuals with gestational diabetes by searching for specific diagnosis codes across multiple healthcare registers, including the Hospital Discharge Register, Care Register for Health Care, Register of Primary Health Care Visits, and Cause of Death statistics. Any entry in the Medical Birth Register for gestational diabetes also qualifies. Individuals were classified as having gestational diabetes if no other diabetes diagnoses were found. For diagnoses before 1987, pregnancy and postpartum periods were calculated and compared with diabetes diagnosis dates. Similarly, post-1987 deliveries were checked against antidiabetic medication purchases. If diabetes diagnoses or medication purchases were limited to the pregnancy and postpartum period, the individual was classified as having gestational diabetes. This classification allows the FinDM database to be used for research on gestational diabetes. \\
+Hungary &
+Gestational diabetes was identified using the ICD-10 code of O244. \\
+Japan &
+Gestational diabetes was identified using the ICD-10 codes of O244 and O249. \\
+Scotland &
+Gestational diabetes was recorded as a reason for the diagnosis of diabetes in the clinical record. \\
+South Korea &
+Gestational diabetes was identified using ICD-10 codes. \\
+Spain (Catalonia) &
+Only people with ICD-10 codes of E10 or E11 in the clinical records were included. \\
 \hline
 \end{tabular}
 \end{table}
@@ -3018,7 +3035,7 @@ Spain (Catalonia) & Only people with ICD-10 codes of E10 or E11 in the clinical 
 
 \begin{table}[h!]
   \begin{center}
-    \caption{Crude incidence rate of diagnosed diabetes for people aged 15-39 years, by jurisdiction}
+    \caption{Crude incidence rate of diagnosed diabetes for people aged 15-39 years, by jurisdiction. Numbers in brackets represent 95\% confidence intervals.}
     \hspace*{-1.5cm}
     \label{cleansumtab}
      \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
@@ -3096,7 +3113,7 @@ Spain (Catalonia) & Only people with ICD-10 codes of E10 or E11 in the clinical 
 
 \begin{table}[h!]
   \begin{center}
-    \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.}
+    \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age. Numbers in brackets represent 95\% confidence intervals.}
     \label{APCs}
      \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
       multicolumn names,
@@ -3127,6 +3144,76 @@ Spain (Catalonia) & Only people with ICD-10 codes of E10 or E11 in the clinical 
   \end{center}
 \end{table}
 
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.
+Analysis restricted to ages 15-34. Numbers in brackets represent 95\% confidence intervals.}
+    \label{APCs}
+     \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
+      multicolumn names,
+      col sep=colon,
+      header=false,
+      string type,
+	  display columns/0/.style={column name=Country,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+	  display columns/1/.style={column name=Period,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+      display columns/2/.style={column name=Sex, column type={l}, text indicator="},
+      display columns/3/.style={column name=Typical type 1 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/4/.style={column name=Typical type 2 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/5/.style={column name=Uncertain diabetes type, column type={r}, column type/.add={|}{|}},
+      display columns/6/.style={column name=Total diabetes, column type={r}, column type/.add={}{|}},
+      every head row/.style={
+        before row={\toprule
+					},
+        after row={\midrule}
+            },
+        every nth row={3}{before row=\midrule},
+        every last row/.style={after row=\bottomrule},
+    ]{APCs_DS.csv}
+  \end{center}
+\end{table}
+
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Average annual change in the incidence rates of diabetes, by country, sex, and diabetes type. Adjusted for age.
+Includes all uncertain diabetes cases as either type 1 or type 2 diabetes. Numbers in brackets represent 95\% confidence intervals.}
+    \label{APCs}
+     \fontsize{7pt}{9pt}\selectfont\pgfplotstabletypeset[
+      multicolumn names,
+      col sep=colon,
+      header=false,
+      string type,
+	  display columns/0/.style={column name=Country,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+	  display columns/1/.style={column name=Period,
+		assign cell content/.code={
+\pgfkeyssetvalue{/pgfplots/table/@cell content}
+{\multirow{3}{*}{##1}}}},
+      display columns/2/.style={column name=Sex, column type={l}, text indicator="},
+      display columns/3/.style={column name=Typical type 1 diabetes, column type={r}, column type/.add={|}{}},
+      display columns/4/.style={column name=Typical type 2 diabetes, column type={r}, column type/.add={|}{}},
+      every head row/.style={
+        before row={\toprule
+					},
+        after row={\midrule}
+            },
+        every nth row={3}{before row=\midrule},
+        every last row/.style={after row=\bottomrule},
+    ]{APCs_US.csv}
+  \end{center}
+\end{table}
+
+
+
 \clearpage
 \section{Supplementary Figures}
 
@@ -3137,8 +3224,17 @@ use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country calendar_yr)
 gen inc1 = 100000*inc_t1d/pys_nondm
+gen se1 = sqrt((1-(inc_t1d/pys_nondm))/inc_t1d)
+gen lb1 = 100000*exp(ln(inc_t1d/pys_nondm)-1.96*se1)
+gen ub1 = 100000*exp(ln(inc_t1d/pys_nondm)+1.96*se1)
 gen inc2 = 100000*inc_t2d/pys_nondm
+gen se2 = sqrt((1-(inc_t2d/pys_nondm))/inc_t2d)
+gen lb2 = 100000*exp(ln(inc_t2d/pys_nondm)-1.96*se2)
+gen ub2 = 100000*exp(ln(inc_t2d/pys_nondm)+1.96*se2)
 gen inc3 = 100000*inc_unc/pys_nondm
+gen se3 = sqrt((1-(inc_unc/pys_nondm))/inc_unc)
+gen lb3 = 100000*exp(ln(inc_unc/pys_nondm)-1.96*se3)
+gen ub3 = 100000*exp(ln(inc_unc/pys_nondm)+1.96*se3)
 foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
@@ -3170,6 +3266,9 @@ twoway ///
 (line inc1 calendar if country == "`c'", color(dknavy)) ///
 (line inc2 calendar if country == "`c'", color(cranberry)) ///
 (line inc3 calendar if country == "`c'", color(magenta)) ///
+(rarea ub1 lb1 calendar if country == "`c'", color(dknavy%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub2 lb2 calendar if country == "`c'", color(cranberry%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub3 lb3 calendar if country == "`c'", color(magenta%30) fintensity(inten80) lwidth(none)) ///
 , legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
 order(1 "Typical type 1 diabetes" ///
 2 "Typical type 2 diabetes" ///
@@ -3177,19 +3276,28 @@ order(1 "Typical type 1 diabetes" ///
 rows(3)) ///
 graphregion(color(white)) ///
 xlabel(2000(5)2020) ///
-ylabel(1 2 5 10 20 50 100 500, angle(0) format(%9.0f)) ///
-yscale(log range(1 500)) ///
+ylabel(0.5 "0.5" 1 2 5 10 20 50 100 500, angle(0) format(%9.0f)) ///
+yscale(log range(0.5 500)) ///
 ytitle("Incidence rate (per 100,000 person-years)") ///
 xtitle("Calendar year") ///
 title("`co'", placement(west) color(gs0) size(medium))
-texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type)
+texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type. Shaded areas represent 95\% confidence intervals.)
 }
 use dbasev9, clear
 drop if cal >= 2021
 collapse (sum) inc_t1d inc_t2d inc_uncertaint pys_nondm, by(country sex calendar_yr)
 gen inc1 = 100000*inc_t1d/pys_nondm
+gen se1 = sqrt((1-(inc_t1d/pys_nondm))/inc_t1d)
+gen lb1 = 100000*exp(ln(inc_t1d/pys_nondm)-1.96*se1)
+gen ub1 = 100000*exp(ln(inc_t1d/pys_nondm)+1.96*se1)
 gen inc2 = 100000*inc_t2d/pys_nondm
+gen se2 = sqrt((1-(inc_t2d/pys_nondm))/inc_t2d)
+gen lb2 = 100000*exp(ln(inc_t2d/pys_nondm)-1.96*se2)
+gen ub2 = 100000*exp(ln(inc_t2d/pys_nondm)+1.96*se2)
 gen inc3 = 100000*inc_unc/pys_nondm
+gen se3 = sqrt((1-(inc_unc/pys_nondm))/inc_unc)
+gen lb3 = 100000*exp(ln(inc_unc/pys_nondm)-1.96*se3)
+gen ub3 = 100000*exp(ln(inc_unc/pys_nondm)+1.96*se3)
 foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
 local c = "Australia"
@@ -3224,6 +3332,12 @@ twoway ///
 (line inc2 calendar if country == "`c'" & sex == "M", color(cranberry) lpattern(shortdash)) ///
 (line inc3 calendar if country == "`c'" & sex == "F", color(magenta)) ///
 (line inc3 calendar if country == "`c'" & sex == "M", color(magenta) lpattern(shortdash)) ///
+(rarea ub1 lb1 calendar if country == "`c'" & sex == "F", color(dknavy%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub2 lb2 calendar if country == "`c'" & sex == "F", color(cranberry%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub3 lb3 calendar if country == "`c'" & sex == "F", color(magenta%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub1 lb1 calendar if country == "`c'" & sex == "M", color(dknavy%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub2 lb2 calendar if country == "`c'" & sex == "M", color(cranberry%30) fintensity(inten80) lwidth(none)) ///
+(rarea ub3 lb3 calendar if country == "`c'" & sex == "M", color(magenta%30) fintensity(inten80) lwidth(none)) ///
 , legend(symxsize(0.13cm) position(3) region(lcolor(white) color(none)) ///
 order(1 "Typical type 1 diabetes" ///
 3 "Typical type 2 diabetes" ///
@@ -3231,12 +3345,12 @@ order(1 "Typical type 1 diabetes" ///
 rows(3)) ///
 graphregion(color(white)) ///
 xlabel(2000(5)2020) ///
-ylabel(0.5 "0.5" 1 2 5 10 20 50 100 200 500, angle(0)) ///
-yscale(log range(0.49 500)) ///
+ylabel(0.05 "0.05" 0.1 "0.1" 0.2 "0.2" 0.5 "0.5" 1 2 5 10 20 50 100 200 500, angle(0)) ///
+yscale(log range(0.05 500)) ///
 ytitle("Incidence rate (per 100,000 person-years)") ///
 xtitle("Calendar year") ///
 title("`co'", placement(west) color(gs0) size(medium))
-texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines.)
+texdoc graph, label(`c'crude) figure(h!) caption(Crude incidence rates of diabetes in `co' among people aged 15-39 years, by diabetes type and sex. Females = solid connecting lines; males = dashed connecting lines. Shaded areas represent 95\% confidence intervals.)
 }
 texdoc stlog close
 
@@ -3245,7 +3359,7 @@ texdoc stlog close
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{APCfig1.pdf}
-    \caption{Average annual change in the incidence rates of diabetes, by jurisdiction and diabetes type}
+    \caption{Average annual change in the incidence rates of diabetes, by jurisdiction and diabetes type.}
     \label{AAPCfig1}
 \end{figure}
 
@@ -3287,7 +3401,7 @@ TTFATF_`i'_M_inc_t2d.gph ///
 TTFATF_`i'_F_inc_uncertaint.gph ///
 TTFATF_`i'_M_inc_uncertaint.gph ///
 , altshrink rows(3) xsize(3.5) graphregion(color(white))
-texdoc graph, label(`c' agespec) figure(h!) caption(Incidence rates of diabetes in `co' by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex)
+texdoc graph, label(`c' agespec) figure(h!) caption(Incidence rates of diabetes in `co' by age for the first, middle, and last calendar year of follow-up, by diabetes type and sex. Shaded areas represent 95\% confidence intervals.)
 }
 foreach i in 1 3 4 5 6 7 8 2 {
 if `i' == 1 {
@@ -3325,10 +3439,9 @@ Escape_`i'_F_inc_uncertaint.gph ///
 Escape_`i'_M_inc_uncertaint.gph ///
 , altshrink rows(3) xsize(3.5) graphregion(color(white))
 texdoc graph, label(`c' agespec) figure(h!) ///
-caption(Incidence rates of diabetes in `co' for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex)
+caption(Incidence rates of diabetes in `co' for people aged 15, 20, 25, 30, and 35 years, by diabetes type and sex. Shaded areas represent 95\% confidence intervals.)
 }
 foreach i in 1 3 4 5 6 7 8 2 {
-foreach iii in inc_t1d inc_t2d inc_uncertaint {
 if `i' == 1 {
 local c = "Australia"
 }
@@ -3364,33 +3477,6 @@ local oc = "Typical type 2 diabetes"
 else {
 local oc = "Uncertain diabetes type"
 }
-
-forval a = 1/2 {
-clear
-append using APC_age_`i'_M_`iii'_`a'
-append using APC_age_`i'_F_`iii'_`a'
-if "`iii'" == "inc_t1d" {
-drop if age > 35
-}
-twoway ///
-(rarea ub lb age if sex == "M", color("blue%30") fintensity(inten80) lwidth(none)) ///
-(line apc age if sex == "M", color("blue") lpattern(solid)) ///
-(rarea ub lb age if sex == "F", color("red%30") fintensity(inten80) lwidth(none)) ///
-(line apc age if sex == "F", color("red") lpattern(solid)) ///
-,legend(ring(0) symxsize(0.13cm) position(2) region(lcolor(white) color(none)) ///
-order(2 "Males" ///
-4 "Females")  ///
-cols(1)) ///
-bgcolor(white) graphregion(color(white)) ///
-ytitle("Annual change in incidence rates (%)", xoffset(-1)) ///
-yline(0, lcolor(gs0)) ///
-ylabel(-5(5)15, angle(0)) ///
-xtitle("Attained age (years)") ///
-xlabel(15(5)40) ///
-title("`co' - `oc'", placement(west) size(medium) color(gs0))
-graph save "Graph" Apage_`i'_`iii'_`a', replace
-}
-}
 graph combine ///
 Apage_`i'_inc_t1d_1.gph ///
 Apage_`i'_inc_t1d_2.gph ///
@@ -3402,8 +3488,26 @@ Apage_`i'_inc_uncertaint_2.gph ///
 texdoc graph, label(`c' apcageg) figure(h!) caption(Annual change in the incidence rates of diabetes in `co' by age, by diabetes type and sex. ///
 Values are predicted from a Poisson model with a spline effect of attained age, a log-linear effect of calendar time, and an interaction ///
 between age and calendar time. The left panels use a spline term for age in the interaction, the right panels use the product of ///
-age and calendar time in the interaction.)
+age and calendar time in the interaction. Shaded areas represent 95\% confidence intervals.)
 }
+graph combine ///
+Alive_F_inc_t1d_STD_DS.gph ///
+Alive_M_inc_t1d_STD_DS.gph ///
+Alive_F_inc_t2d_STD_DS.gph ///
+Alive_M_inc_t2d_STD_DS.gph ///
+Alive_F_inc_uncertaint_STD_DS.gph ///
+Alive_M_inc_uncertaint_STD_DS.gph ///
+, altshrink rows(3) xsize(3.3) graphregion(color(white))
+texdoc graph, label(STDfigds) figure(h!) caption(Age-standardized incidence rates of diabetes for people aged 15-34 years, by diabetes type and sex. ///
+South Korea is excluded from type 1 diabetes due to insufficient numbers. Shaded areas represent 95\% confidence intervals.)
+graph combine ///
+Alive_F_inc_t1d_STD_US.gph ///
+Alive_M_inc_t1d_STD_US.gph ///
+Alive_F_inc_t2d_STD_US.gph ///
+Alive_M_inc_t2d_STD_US.gph ///
+, altshrink rows(2) xsize(5) graphregion(color(white))
+texdoc graph, label(STDfigus) figure(h!) caption(Age-standardized incidence rates of diabetes for people aged 15-39 years, by diabetes type and sex. ///
+Includes all uncertain diabetes cases as either type 1 or type 2 diabetes. Shaded areas represent 95\% confidence intervals.)
 texdoc stlog close
 
 
