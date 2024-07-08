@@ -2970,6 +2970,33 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
 \end{table}
 
 
+\begin{table}[]
+\centering
+    \caption{A summary of how people with gestational diabetes were excluded in each data source}
+\begin{tabular}{p{5cm}p{11cm}}
+\hline
+Jurisdiction & Method of exclusion of gestational diabetes \\
+\hline
+Australia &
+The presence or absence of gestational diabetes is recorded by the registering clinician for each registrant. \\
+Denmark &
+If a woman is diagnosed with GDM in the National Patient Register (NPR), she is excluded from entering the diabetes register on any other criterion from 280 days before to 280 days after the GDM diagnosis, ensuring the exclusion of any potential pregnancy-related period and being conservatively thorough. \\
+Finland &
+The database separates individuals with gestational diabetes by searching for specific diagnosis codes across multiple healthcare registers, including the Hospital Discharge Register, Care Register for Health Care, Register of Primary Health Care Visits, and Cause of Death statistics. Any entry in the Medical Birth Register for gestational diabetes also qualifies. Individuals were classified as having gestational diabetes if no other diabetes diagnoses were found. For diagnoses before 1987, pregnancy and postpartum periods were calculated and compared with diabetes diagnosis dates. Similarly, post-1987 deliveries were checked against antidiabetic medication purchases. If diabetes diagnoses or medication purchases were limited to the pregnancy and postpartum period, the individual was classified as having gestational diabetes. This classification allows the FinDM database to be used for research on gestational diabetes. \\
+Hungary &
+Gestational diabetes was identified using the ICD-10 code of O244. \\
+Japan &
+Gestational diabetes was identified using the ICD-10 codes of O244 and O249. \\
+Scotland &
+Gestational diabetes was recorded as a reason for the diagnosis of diabetes in the clinical record. \\
+South Korea &
+Gestational diabetes was identified using ICD-10 codes. \\
+Spain (Catalonia) &
+Only people with ICD-10 codes of E10 or E11 in the clinical records were included. \\
+\hline
+\end{tabular}
+\end{table}
+
 \begin{landscape}
 \begin{table}[h!]
   \begin{center}
@@ -2998,39 +3025,7 @@ ICD=International Classification of Diseases; ICD-10=International Classificatio
   \end{center}
 \end{table}
 
-\end{landscape}
-
-\begin{table}[]
-\centering
-    \caption{A summary of how people with gestational diabetes were excluded in each data source}
-\begin{tabular}{p{5cm}p{11cm}}
-\hline
-Jurisdiction & Method of exclusion of gestational diabetes \\
-\hline
-Australia &
-The presence or absence of gestational diabetes is recorded by the registering clinician for each registrant. \\
-Denmark &
-If a woman is diagnosed with GDM in the National Patient Register (NPR), she is excluded from entering the diabetes register on any other criterion from 280 days before to 280 days after the GDM diagnosis, ensuring the exclusion of any potential pregnancy-related period and being conservatively thorough. \\
-Finland &
-The database separates individuals with gestational diabetes by searching for specific diagnosis codes across multiple healthcare registers, including the Hospital Discharge Register, Care Register for Health Care, Register of Primary Health Care Visits, and Cause of Death statistics. Any entry in the Medical Birth Register for gestational diabetes also qualifies. Individuals were classified as having gestational diabetes if no other diabetes diagnoses were found. For diagnoses before 1987, pregnancy and postpartum periods were calculated and compared with diabetes diagnosis dates. Similarly, post-1987 deliveries were checked against antidiabetic medication purchases. If diabetes diagnoses or medication purchases were limited to the pregnancy and postpartum period, the individual was classified as having gestational diabetes. This classification allows the FinDM database to be used for research on gestational diabetes. \\
-Hungary &
-Gestational diabetes was identified using the ICD-10 code of O244. \\
-Japan &
-Gestational diabetes was identified using the ICD-10 codes of O244 and O249. \\
-Scotland &
-Gestational diabetes was recorded as a reason for the diagnosis of diabetes in the clinical record. \\
-South Korea &
-Gestational diabetes was identified using ICD-10 codes. \\
-Spain (Catalonia) &
-Only people with ICD-10 codes of E10 or E11 in the clinical records were included. \\
-\hline
-\end{tabular}
-\end{table}
-
-
-
-\begin{landscape}
-
+\clearpage
 \pagenumbering{gobble}
 
 \begin{table}[h!]
@@ -3073,9 +3068,9 @@ Only people with ICD-10 codes of E10 or E11 in the clinical records were include
 
 \end{landscape}
 
-
+\clearpage
 \pagenumbering{arabic}
-\setcounter{page}{8}
+\setcounter{page}{10}
 
 
 \begin{table}[h!]
@@ -3211,6 +3206,8 @@ Includes all uncertain diabetes cases as either type 1 or type 2 diabetes. Numbe
     ]{APCs_US.csv}
   \end{center}
 \end{table}
+
+
 
 
 
