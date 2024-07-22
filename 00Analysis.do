@@ -308,11 +308,15 @@ For the analyses, we are going to use Carstensen's Age-Period-Cohort model \cite
 to estimate the age and sex-specific incidence rates of type 2 diabetes for each country. For this, 
 we take the incidence and person-years in 5-year age groups, and fit a Poisson model with spline effects
 of age, period (calendar time; measured from 2010 (i.e., 2010 is set to 0)), and cohort (calendar time minus age). 
-This is done separately for each country and sex. Moreover, because of the different years covered by each dataset,
-the knot locations are different for each country (and knot placement is as recommended by Harrell \cite{Harrell2001Springer} 
-for period and cohort effects).
+This is done separately for each country and sex. 
 
-Next, we check these models have fit the data appropriately by investigating the Pearson residuals. 
+Knot number was determined iteratively and selected based on best fit 
+(and knot placement is based on evenly spaced quantiles of the data as recommended by Harrell \cite{Harrell2001Springer}). 
+Best fit was determined based upon visual inspection of the relationship 
+between modeled and crude rates, as well as inspection of the Pearson residuals by age, period, and cohort. 
+Moreover, because of the different years covered by each dataset,
+the knot locations are different for each country .
+
 Then, we use this model to predict the incidence rates of diabetes by age and calendar time. 
 These results are presented in figures showing the 
 incidence rates of type 2 diabetes for each country.
