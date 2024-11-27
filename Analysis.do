@@ -88,7 +88,7 @@ Baker Heart and Diabetes Institute, Melbourne, Australia \\
 \pagebreak
 \section{Preface}
 
-This is the protocol for the paper ``Trends in incidence of young-onset diabetes by diabetes type: a multi-national population-based study'' \cite{MaglianoLDE2024}.
+This is the protocol for the paper ``Trends in incidence of young-onset diabetes by diabetes type: a multi-national population-based study'' \cite{DMLDE2024}.
 The methods used in this analyses are drawn heavily/almost entirely from Bendix Carstensen 
 (see \cite{MaglianoLDE2021,CarstensenSTATMED2007}).
 To generate this document, the Stata package texdoc \cite{Jann2016Stata} was used, which is 
@@ -2781,7 +2781,7 @@ Analysis restricted to ages 15-34. Numbers in brackets represent 95\% confidence
 \clearpage
 \section*{References}
 \addcontentsline{toc}{section}{References}
-\bibliography{/home/jimb0w/Documents/Library.bib}
+\bibliography{/home/jimb0w/Documents/YO/Library/Library.bib}
 \end{document}
 ***/
 
